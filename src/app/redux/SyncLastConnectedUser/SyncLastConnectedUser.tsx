@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { useFirebase, isEmpty } from "react-redux-firebase";
+import { isEmpty, isLoaded, useFirebase } from "react-redux-firebase";
 import { User } from "firebase";
 
 import { useAuth } from "../../../features/auth";
@@ -18,7 +18,7 @@ function SyncLastConnectedUser() {
   const auth = useAuth();
 
   useEffect(() => {
-    if (isEmpty(auth)) {
+    if (isLoaded(auth) && isEmpty(auth)) {
       firebase
         .auth()
         .signInAnonymously()
