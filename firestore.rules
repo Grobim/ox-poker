@@ -9,7 +9,8 @@ service cloud.firestore {
 
     match /settings {
       match /{userId} {
-        allow read, write: if request.auth.uid == userId;
+        allow read, write: if request.auth.uid == userId
+          && exists(/databases/$(database)/documents/users/$(userId));
       }
 
       match /undefined {

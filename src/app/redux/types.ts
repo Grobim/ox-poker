@@ -2,6 +2,7 @@ import { Dispatch } from "@reduxjs/toolkit";
 import { getFirebase, FirebaseReducer } from "react-redux-firebase";
 
 import type { UserProfile } from "../../features/auth";
+import type { CardPickerState } from "../../features/cardPicker/redux/types";
 import type { CounterState } from "../../features/counter/redux/slice";
 import type { UserSettings } from "../../features/settings";
 import type { UsersState } from "../../features/users/redux/types";
@@ -30,6 +31,7 @@ interface FirestoreState<T extends Record<string, any> = FirestoreSchema> {
 
 interface RootState {
   app: AppState;
+  cardPicker: CardPickerState;
   counter: CounterState;
   users: UsersState;
   firebase: FirebaseReducer.Reducer<UserProfile>;

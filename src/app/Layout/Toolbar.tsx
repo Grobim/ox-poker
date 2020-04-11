@@ -6,7 +6,7 @@ import Typography from "@material-ui/core/Typography";
 import MenuIcon from "@material-ui/icons/Menu";
 import clsx from "clsx";
 import React, { MouseEventHandler, ReactChild } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 import useStyles from "./Toolbar.styles";
 
@@ -22,6 +22,7 @@ interface ToolbarLinkProps extends Record<string, any> {
 
 function Toolbar({ onMenuClick }: ToolbarProps) {
   const classes = useStyles();
+  const location = useLocation();
 
   function ToolbarLink({ children, className, ...props }: ToolbarLinkProps) {
     return (
@@ -46,7 +47,11 @@ function Toolbar({ onMenuClick }: ToolbarProps) {
         <Typography variant="h6" noWrap to="/" component={ToolbarLink}>
           OX Poker
         </Typography>
-        <Button color="inherit" component={Link} to="/login">
+        <Button
+          color="inherit"
+          component={Link}
+          to={{ pathname: "/login", state: { from: location } }}
+        >
           Login
         </Button>
       </MaterialToolbar>
