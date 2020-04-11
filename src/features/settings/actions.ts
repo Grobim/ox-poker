@@ -7,7 +7,7 @@ import {
   selectLastConnectedUserId,
 } from "../../app/redux";
 
-import { selectAuth } from "../auth";
+import { selectAuth, selectProfile } from "../auth";
 
 import { UserSettings } from "./types";
 
@@ -21,9 +21,10 @@ const triggerUserSettingsUpdate = createAsyncThunk<
     const firestore = getFirebase().firestore();
 
     const auth = selectAuth(getState());
+    const profile = selectProfile(getState());
     const lastConnectedUserId = selectLastConnectedUserId(getState());
 
-    if (isEmpty(auth)) {
+    if (isEmpty(auth) || isEmpty(profile)) {
       dispatch(
         firestoreOverride({
           data: {

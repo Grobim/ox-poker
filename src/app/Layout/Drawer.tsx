@@ -6,6 +6,7 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
+import ForwardIcon from "@material-ui/icons/Forward";
 import PeopleIcon from "@material-ui/icons/People";
 import SettingsIcon from "@material-ui/icons/Settings";
 import clsx from "clsx";
@@ -58,19 +59,23 @@ function Drawer({ mobileOpen, onMenuClose }: DrawerProps) {
   const drawer = (
     <div>
       <div className={classes.toolbar} />
-      {isAdmin && (
-        <>
-          <List component="div">
-            <ListItem component={forwardRef(NavListItem)} to="/users">
-              <ListItemIcon>
-                <PeopleIcon />
-              </ListItemIcon>
-              <ListItemText primary="Users" />
-            </ListItem>
-          </List>
-          <Divider />
-        </>
-      )}
+      <List component="div">
+        <ListItem component={forwardRef(NavListItem)} to="/local">
+          <ListItemIcon>
+            <ForwardIcon />
+          </ListItemIcon>
+          <ListItemText primary="Local" />
+        </ListItem>
+        {isAdmin && (
+          <ListItem component={forwardRef(NavListItem)} to="/users">
+            <ListItemIcon>
+              <PeopleIcon />
+            </ListItemIcon>
+            <ListItemText primary="Users" />
+          </ListItem>
+        )}
+      </List>
+      <Divider />
       <List component="div">
         <ListItem component={forwardRef(NavListItem)} to="/settings">
           <ListItemIcon>

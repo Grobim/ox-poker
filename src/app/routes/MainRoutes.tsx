@@ -9,6 +9,11 @@ import { loadableWithRefreshedStore } from "./loadableWithRefreshedStore";
 const Home = loadableWithRefreshedStore(() =>
   import(/* webpackChunkName: "home" */ "../../features/home/Home")
 );
+const CardPicker = loadableWithRefreshedStore(() =>
+  import(
+    /* webpackChunkName: "cardPicker" */ "../../features/cardPicker/CardPicker"
+  )
+);
 const UserList = loadableWithRefreshedStore(() =>
   import(/* webpackChunkName: "userList" */ "../../features/users/UserList")
 );
@@ -24,6 +29,9 @@ function MainRoutes() {
     <Switch>
       <Route exact path="/">
         <Home />
+      </Route>
+      <Route exact path="/local">
+        <CardPicker />
       </Route>
       <PrivateRoute path="/users" role={Role.ADMIN}>
         <UserList />

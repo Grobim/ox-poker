@@ -10,10 +10,12 @@ const useStyles = makeStyles((theme) => ({
       display: "none",
     },
   },
-  navToolbar: {
-    color: "inherit",
-    textDecoration: "none",
-    flexGrow: 1,
+  avatarContainer: {
+    padding: theme.spacing(1),
+  },
+  avatar: {
+    width: theme.spacing(6),
+    height: theme.spacing(6),
   },
 }));
 

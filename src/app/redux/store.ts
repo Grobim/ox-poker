@@ -60,7 +60,6 @@ const store = storeManager.store;
 if (process.env.NODE_ENV !== "production") {
   if (module.hot) {
     module.hot.accept("./reducers", () => {
-      console.log("new reducer");
       storeManager.registerReducers(getReducerMap());
       storeManager.refreshStore();
     });

@@ -27,7 +27,6 @@ render(App);
 if (process.env.NODE_ENV !== "production") {
   if (module.hot) {
     module.hot.accept("./app/App", () => {
-      console.log("new app");
       const NextApp = require("./app/App").default;
       render(NextApp);
     });
