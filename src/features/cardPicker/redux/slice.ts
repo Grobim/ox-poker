@@ -11,7 +11,11 @@ const slice = createSlice({
   initialState,
   reducers: {
     selectCard: (state, { payload }: PayloadAction<number | SpecialCard>) => {
-      state.selectedCard = payload;
+      if (state.selectedCard === payload) {
+        delete state.selectedCard;
+      } else {
+        state.selectedCard = payload;
+      }
     },
     resetSelectedCard: (state) => {
       delete state.selectedCard;
