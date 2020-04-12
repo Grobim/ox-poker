@@ -1,11 +1,9 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { isEmpty, isLoaded, useFirebase } from "react-redux-firebase";
+import { useFirebase } from "react-redux-firebase";
 import { User } from "firebase";
 
-import { useAuth } from "../../../features/auth";
-
-import slice from "../slice";
+import slice from "../redux/slice";
 
 const {
   actions: { updateLastConnectedUid },
@@ -14,20 +12,6 @@ const {
 function SyncLastConnectedUser() {
   const firebase = useFirebase();
   const dispatch = useDispatch();
-
-  const auth = useAuth();
-
-  useEffect(() => {
-    if (isLoaded(auth) && isEmpty(auth)) {
-      firebase
-        .auth()
-        .signInAnonymously()
-        .catch((error) => {
-          console.error(error);
-          throw error;
-        });
-    }
-  }, [firebase, auth]);
 
   useEffect(() => {
     return firebase.auth().onAuthStateChanged((user: User | null) => {

@@ -16,7 +16,7 @@ function PrivateRoute({ children, role, ...props }: PrivateRouteProps) {
     return null;
   }
 
-  if (isEmpty(auth)) {
+  if (isEmpty(auth) || auth.isAnonymous) {
     const { location } = props;
 
     return <Redirect to={{ pathname: "/login", state: { from: location } }} />;
