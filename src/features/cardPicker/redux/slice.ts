@@ -10,15 +10,18 @@ const slice = createSlice({
   name: "cardPicker",
   initialState,
   reducers: {
-    selectCard: (state, { payload }: PayloadAction<number | SpecialCard>) => {
-      if (state.selectedCard === payload) {
+    setSelectedCard: (
+      state,
+      { payload }: PayloadAction<number | SpecialCard | undefined>
+    ) => {
+      if (typeof payload === "undefined" || state.selectedCard === payload) {
         delete state.selectedCard;
       } else {
         state.selectedCard = payload;
       }
     },
-    resetSelectedCard: (state) => {
-      delete state.selectedCard;
+    setCards: (state, { payload }: PayloadAction<number[]>) => {
+      state.cards = [...payload, SpecialCard.LONG, SpecialCard.PAUSE];
     },
   },
 });

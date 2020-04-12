@@ -1,27 +1,27 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
+import clsx from "clsx";
 
-import Card from "@material-ui/core/Card";
-import CardActionArea from "@material-ui/core/CardActionArea";
-import CardContent from "@material-ui/core/CardContent";
 import Fab from "@material-ui/core/Fab";
-import Fade from "@material-ui/core/Fade";
 import Grid from "@material-ui/core/Grid";
+import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import Zoom from "@material-ui/core/Zoom";
-import { useTheme } from "@material-ui/core/styles";
-import HourglassFullIcon from "@material-ui/icons/HourglassFull";
-import LocalCafeIcon from "@material-ui/icons/LocalCafe";
+
+import EditIcon from "@material-ui/icons/Edit";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 
 import storeManager from "../../../app/redux/StoreManager";
 
 import { useCards, useSelectedCard } from "../hooks";
-import { resetSelectedCard } from "../redux";
+import { setCards, setSelectedCard } from "../redux";
 import { name, reducer } from "../redux/slice";
 import { SpecialCard } from "../redux/types";
 
-import PickableCard from "../PickableCard";
+import CardEditor from "../CardEditor";
+import CardSelector from "../CardSelector";
+import CardHider from "../CardHider";
+import ClickableCard from "../ClickableCard";
 
 import useStyles from "./CardPicker.styles";
 
@@ -50,36 +50,23 @@ function CardPicker() {
   const dispatch = useDispatch();
 
   const classes = useStyles();
-  const theme = useTheme();
 
   const cards = useCards();
   const selectedCard = useSelectedCard();
-
-  const [pickState, setPickState] = useState(PickState.PICKING);
-
-  const transitionDuration = {
-    enter: theme.transitions.duration.enteringScreen,
-    exit: theme.transitions.duration.leavingScreen,
-  };
-
-  const clickEventListener = useCallback(
-    function clickEventListener(event: MouseEvent) {
-      if (pickState === PickState.HIDDEN) {
-        event.preventDefault();
-        event.stopPropagation();
-        setPickState(PickState.REVEALED);
-      }
-    },
-    [pickState]
+  const [editableCards, setEditableCards] = useState(
+    cards.filter((card) => typeof card === "number") as number[]
   );
 
-  useEffect(() => {
-    document.body.addEventListener("click", clickEventListener);
+  const [pickState, setPickState] = useState(PickState.PICKING);
+  const [isEditing, setIsEditing] = useState(false);
 
-    return () => {
-      document.body.removeEventListener("click", clickEventListener);
-    };
-  }, [clickEventListener]);
+  function handleCardSelect(card: number | SpecialCard) {
+    dispatch(setSelectedCard(card));
+  }
+
+  function handleCardHiderClick() {
+    setPickState(PickState.REVEALED);
+  }
 
   function handleHideClick() {
     setPickState(PickState.HIDDEN);
@@ -87,81 +74,65 @@ function CardPicker() {
 
   function handleRevealCardClick() {
     setPickState(PickState.PICKING);
-    dispatch(resetSelectedCard());
+    dispatch(setSelectedCard());
+  }
+
+  function handleEditClick() {
+    setIsEditing(!isEditing);
+    dispatch(setSelectedCard());
+
+    if (isEditing) {
+      dispatch(setCards(editableCards));
+    }
+  }
+
+  function handleEditableCardsChange(newCards: number[]) {
+    setEditableCards(newCards);
   }
 
   return (
-    <Grid container className={classes.root} direction="column">
-      <Grid item>
-        <Typography variant="h4" gutterBottom>
+    <Grid container className={classes.root} direction="column" spacing={2}>
+      <Grid item className={classes.titleContainer}>
+        <Typography variant="h4" className={classes.title}>
           CardPicker
         </Typography>
+        {pickState === PickState.PICKING && (
+          <IconButton
+            className={clsx({
+              [classes.editIconEditing]: isEditing,
+            })}
+            onClick={handleEditClick}
+          >
+            <EditIcon />
+          </IconButton>
+        )}
       </Grid>
       <Grid item className={classes.content}>
-        <Fade
-          in={pickState === PickState.PICKING}
-          unmountOnExit
-          timeout={transitionDuration}
-          style={{
-            transitionDelay: `${transitionDuration.exit}ms`,
-          }}
-        >
-          <Grid container spacing={1}>
-            {cards.map((card) => (
-              <Grid item key={card} xs={4} sm={3} md={2}>
-                <PickableCard card={card} selected={selectedCard === card} />
-              </Grid>
-            ))}
-          </Grid>
-        </Fade>
-        <Fade
-          in={pickState === PickState.HIDDEN}
-          unmountOnExit
-          timeout={transitionDuration}
-          style={{
-            transitionDelay: `${transitionDuration.exit}ms`,
-          }}
-        >
-          <div className={classes.hiddenLabelContainer}>
-            <Typography variant="h5" className={classes.hiddenLabel}>
-              Click anywhere to reveal
-            </Typography>
-          </div>
-        </Fade>
-        <Fade
-          in={pickState === PickState.REVEALED}
-          unmountOnExit
-          timeout={{
-            enter: transitionDuration.enter,
-          }}
-          style={{
-            transitionDelay: `${transitionDuration.exit}ms`,
-          }}
-        >
-          {pickState === PickState.REVEALED ? (
-            <Card className={classes.revealCard}>
-              <CardActionArea
-                className={classes.revealCard}
-                onClick={handleRevealCardClick}
-              >
-                <CardContent className={classes.revealContent}>
-                  {selectedCard === SpecialCard.LONG ? (
-                    <HourglassFullIcon className={classes.revealIcon} />
-                  ) : selectedCard === SpecialCard.PAUSE ? (
-                    <LocalCafeIcon className={classes.revealIcon} />
-                  ) : (
-                    <Typography className={classes.revealLabel}>
-                      {selectedCard}
-                    </Typography>
-                  )}
-                </CardContent>
-              </CardActionArea>
-            </Card>
+        {pickState === PickState.PICKING ? (
+          isEditing ? (
+            <CardEditor
+              cards={editableCards}
+              onCardsChange={handleEditableCardsChange}
+            />
           ) : (
-            <div />
-          )}
-        </Fade>
-        <Zoom in={Boolean(selectedCard) && pickState === PickState.PICKING}>
+            <CardSelector cards={cards} onSelect={handleCardSelect} />
+          )
+        ) : pickState === PickState.HIDDEN ? (
+          <CardHider onClick={handleCardHiderClick} />
+        ) : (
+          <ClickableCard
+            card={selectedCard as number | SpecialCard}
+            onSelect={handleRevealCardClick}
+            fontSize="22vh"
+          />
+        )}
+        <Zoom
+          in={
+            Boolean(selectedCard) &&
+            pickState === PickState.PICKING &&
+            !isEditing
+          }
+        >
           <Fab
             color="primary"
             className={classes.fab}
