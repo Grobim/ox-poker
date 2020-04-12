@@ -18,6 +18,8 @@ import { setCards, setSelectedCard } from "../redux";
 import { name, reducer } from "../redux/slice";
 import { SpecialCard } from "../redux/types";
 
+import DelayedFade from "../../../app/DelayedFade";
+
 import CardEditor from "../CardEditor";
 import CardSelector from "../CardSelector";
 import CardHider from "../CardHider";
@@ -108,24 +110,26 @@ function CardPicker() {
         )}
       </Grid>
       <Grid item className={classes.content}>
-        {pickState === PickState.PICKING ? (
-          isEditing ? (
+        <DelayedFade in={pickState === PickState.PICKING}>
+          {isEditing ? (
             <CardEditor
               cards={editableCards}
               onCardsChange={handleEditableCardsChange}
             />
           ) : (
             <CardSelector cards={cards} onSelect={handleCardSelect} />
-          )
-        ) : pickState === PickState.HIDDEN ? (
+          )}
+        </DelayedFade>
+        <DelayedFade in={pickState === PickState.HIDDEN}>
           <CardHider onClick={handleCardHiderClick} />
-        ) : (
+        </DelayedFade>
+        <DelayedFade in={pickState === PickState.REVEALED}>
           <ClickableCard
             card={selectedCard as number | SpecialCard}
             onSelect={handleRevealCardClick}
             fontSize="22vh"
           />
-        )}
+        </DelayedFade>
         <Zoom
           in={
             Boolean(selectedCard) &&
