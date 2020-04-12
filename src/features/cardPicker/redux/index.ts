@@ -6,4 +6,4 @@ if (process.env.NODE_ENV !== "production") {
   }
 }
 
-export const { selectCard, resetSelectedCard } = slice.actions;
+export const { setSelectedCard, setCards } = slice.actions;

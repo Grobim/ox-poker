@@ -6,9 +6,9 @@ import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 
 import { useSyncedUserSettings } from "../../features/settings";
 
-import SyncLastConnectedUser from "../redux/SyncLastConnectedUser";
-
+import HandleAnonymousSession from "../HandleAnonymousSession";
 import Layout from "../Layout";
+import SyncLastConnectedUser from "../SyncLastConnectedUser";
 import { MainRoutes } from "../routes";
 
 function App() {
@@ -32,6 +32,7 @@ function App() {
           <MainRoutes />
         </Layout>
       </ThemeProvider>
+      <HandleAnonymousSession />
       <SyncLastConnectedUser />
     </>
   );

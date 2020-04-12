@@ -14,7 +14,7 @@ import MenuIcon from "@material-ui/icons/Menu";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 
-import { useProfile } from "../../features/auth";
+import { useProfile, useAuth } from "../../features/auth";
 
 import useStyles from "./Toolbar.styles";
 
@@ -54,22 +54,16 @@ function Toolbar({ onMenuClick }: ToolbarProps) {
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const profile = useProfile();
+  const auth = useAuth();
   const buttonRef = useRef(null);
 
   function handleAvatarClick() {
     setIsMenuOpen(!isMenuOpen);
   }
 
-  function handleLogout() {
-    firebase
-      .logout()
-      .then(() => {
-        setIsMenuOpen(false);
-      })
-      .catch((error) => {
-        console.error(error);
-        throw error;
-      });
+  async function handleLogout() {
+    await firebase.auth().signInAnonymously();
+    setIsMenuOpen(false);
   }
 
   return (
@@ -87,7 +81,7 @@ function Toolbar({ onMenuClick }: ToolbarProps) {
         <Typography variant="h6" noWrap to="/" component={ToolbarLink}>
           OX Poker
         </Typography>
-        {isEmpty(profile) ? (
+        {isEmpty(auth) || auth.isAnonymous ? (
           <Button
             color="inherit"
             component={Link}

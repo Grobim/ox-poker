@@ -1,39 +1,27 @@
-import { makeStyles } from "@material-ui/core";
-
-const revealFontSize = "22vh";
+import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     height: "100%",
   },
-  fab: {
-    position: "absolute",
-    bottom: theme.spacing(2),
-    right: theme.spacing(2),
-  },
-  hiddenLabelContainer: {
-    height: "100%",
+  titleContainer: {
     display: "flex",
+    alignItems: "center",
   },
-  hiddenLabel: {
-    margin: "auto",
+  title: {
+    flex: 1,
+    height: 48,
+  },
+  editIconEditing: {
+    color: theme.palette.secondary.main,
   },
   content: {
     flex: 1,
   },
-  revealCard: {
-    height: "100%",
-  },
-  revealContent: {
-    textAlign: "center",
-  },
-  revealLabel: {
-    fontSize: revealFontSize,
-    fontWeight: "bold",
-  },
-  revealIcon: {
-    height: revealFontSize,
-    width: revealFontSize,
+  fab: {
+    position: "absolute",
+    bottom: theme.spacing(2),
+    right: theme.spacing(2),
   },
 }));
 
