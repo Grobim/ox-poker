@@ -8,7 +8,7 @@ interface PrivateRouteProps extends RouteProps {
   role?: string;
 }
 
-function PrivateRoute({ children, role, ...props }: PrivateRouteProps) {
+function PrivateRoute({ role, ...rootProps }: PrivateRouteProps) {
   const auth = useAuth();
   const profile = useProfile();
 
@@ -17,7 +17,7 @@ function PrivateRoute({ children, role, ...props }: PrivateRouteProps) {
   }
 
   if (isEmpty(auth) || auth.isAnonymous) {
-    const { location } = props;
+    const { location } = rootProps;
 
     return <Redirect to={{ pathname: "/login", state: { from: location } }} />;
   }
@@ -30,7 +30,7 @@ function PrivateRoute({ children, role, ...props }: PrivateRouteProps) {
     return <div>No permissions</div>;
   }
 
-  return <Route {...props}>{children}</Route>;
+  return <Route {...rootProps} />;
 }
 
 export default PrivateRoute;
