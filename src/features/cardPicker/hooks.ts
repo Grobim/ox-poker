@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 import {
   useFirestore,
@@ -6,6 +6,7 @@ import {
   isEmpty,
   useFirestoreConnect,
 } from "react-redux-firebase";
+import filter from "lodash/filter";
 
 import type { RootState, FirestoreSchema } from "../../app/redux";
 import { useProfile, useUserId } from "../auth";
@@ -75,13 +76,37 @@ const useConnectedRoom = (roomId: string) => {
   ]);
   useRegisterToRoom(roomId);
 
+  const userId = useUserId();
+
   const room = useRoom(roomId);
   const members = useSelector(
     (state: RootState<FirestoreSchemaWithMembers>) =>
       state.firestore.data.activeRoomMembers
   );
 
-  return [room, members] as [typeof room, typeof members];
+  const userMember = useMemo(
+    () =>
+      isLoaded(members) &&
+      !isEmpty(members) &&
+      !isEmpty(members[userId]) &&
+      members[userId],
+    [members, userId]
+  ) as RoomMember;
+
+  const readyCount = useMemo(
+    () =>
+      (isLoaded(members) &&
+        filter(members, (member) => member.isReady).length) ||
+      0,
+    [members]
+  );
+
+  return {
+    room,
+    members,
+    userMember,
+    readyCount,
+  };
 };
 
 export {

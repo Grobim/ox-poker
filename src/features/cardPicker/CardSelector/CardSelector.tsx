@@ -3,7 +3,6 @@ import clsx from "clsx";
 
 import Grid from "@material-ui/core/Grid";
 
-import { useSelectedCard } from "../hooks";
 import type { SpecialCard } from "../redux/types";
 
 import ClickableCard from "../ClickableCard";
@@ -13,12 +12,11 @@ import useStyles from "./CardSelector.styles";
 interface CardSelectorProps {
   cards: (number | SpecialCard)[];
   onSelect: (selected: number | SpecialCard) => void;
+  selectedCard?: number | SpecialCard;
 }
 
-function CardSelector({ cards, onSelect }: CardSelectorProps) {
+function CardSelector({ cards, onSelect, selectedCard }: CardSelectorProps) {
   const classes = useStyles();
-
-  const selectedCard = useSelectedCard();
 
   function handleCardSelect(card: number | SpecialCard) {
     onSelect(card);

@@ -8,6 +8,8 @@ import Typography from "@material-ui/core/Typography";
 
 import { useUserId } from "../../auth";
 
+import { RoomState } from "../redux/types";
+
 function RoomCreator() {
   const history = useHistory();
   const firestore = useFirestore();
@@ -19,6 +21,7 @@ function RoomCreator() {
       .collection("rooms")
       .add({
         owner: userId,
+        state: RoomState.LOBBY,
       })
       .then((newRoomRef) => {
         history.replace(`/online/${newRoomRef.id}`);

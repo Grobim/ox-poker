@@ -1,15 +1,6 @@
-import React, { ChangeEvent, FormEvent, useState } from "react";
-import {
-  Link,
-  Route,
-  Switch,
-  useHistory,
-  useRouteMatch,
-} from "react-router-dom";
+import React from "react";
+import { Route, Switch, useRouteMatch } from "react-router-dom";
 
-import Button from "@material-ui/core/Button";
-import Grid from "@material-ui/core/Grid";
-import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 
 import storeManager from "../../../app/redux/StoreManager";
@@ -18,6 +9,7 @@ import { name, reducer } from "../redux/slice";
 
 import Room from "../Room";
 import RoomCreator from "../RoomCreator";
+import RoomHome from "../RoomHome";
 
 storeManager.registerReducers({
   [name]: reducer,
@@ -35,20 +27,7 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 function OnlineCardPicker() {
-  const history = useHistory();
-  const { path, url } = useRouteMatch();
-
-  const [roomId, setRoomId] = useState("");
-
-  function handleRoomIdChange(event: ChangeEvent<HTMLInputElement>) {
-    setRoomId(event.target.value);
-  }
-
-  function handleRoomIdSubmit(event: FormEvent) {
-    event.preventDefault();
-
-    history.push(`${url}/${roomId}`);
-  }
+  const { path } = useRouteMatch();
 
   return (
     <div className="OnlineCardPicker">
@@ -57,46 +36,7 @@ function OnlineCardPicker() {
       </Typography>
       <Switch>
         <Route exact path={path}>
-          <Grid container direction="column" spacing={5}>
-            <Grid item>
-              <Button
-                component={Link}
-                to={`${url}/new-room`}
-                variant="contained"
-                color="primary"
-              >
-                New online room
-              </Button>
-            </Grid>
-            <Grid
-              item
-              container
-              spacing={2}
-              direction="column"
-              component="form"
-              noValidate
-              autoComplete="off"
-              onSubmit={handleRoomIdSubmit}
-            >
-              <Grid item>
-                <TextField
-                  value={roomId}
-                  onChange={handleRoomIdChange}
-                  placeholder="Room ID"
-                />
-              </Grid>
-              <Grid item>
-                <Button
-                  component={Link}
-                  to={`${url}/${roomId}`}
-                  variant="contained"
-                  disabled={!roomId}
-                >
-                  Join online room
-                </Button>
-              </Grid>
-            </Grid>
-          </Grid>
+          <RoomHome />
         </Route>
         <Route path={`${path}/new-room`}>
           <RoomCreator />
