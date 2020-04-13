@@ -14,6 +14,11 @@ const CardPicker = loadableWithRefreshedStore(() =>
     /* webpackChunkName: "cardPicker" */ "../../features/cardPicker/CardPicker"
   )
 );
+const OnlineCardPicker = loadableWithRefreshedStore(() =>
+  import(
+    /* webpackChunkName: "onlineCardPicker" */ "../../features/cardPicker/OnlineCardPicker"
+  )
+);
 const UserList = loadableWithRefreshedStore(() =>
   import(/* webpackChunkName: "userList" */ "../../features/users/UserList")
 );
@@ -32,6 +37,9 @@ function MainRoutes() {
       </Route>
       <Route exact path="/local">
         <CardPicker />
+      </Route>
+      <Route path="/online">
+        <OnlineCardPicker />
       </Route>
       <PrivateRoute path="/users" role={Role.ADMIN}>
         <UserList />
