@@ -1,25 +1,27 @@
 import React from "react";
+import { useDispatch } from "react-redux";
 import clsx from "clsx";
 
 import Grid from "@material-ui/core/Grid";
 
+import { useCards, useSelectedCard } from "../hooks";
+import { setSelectedCard } from "../redux";
 import type { SpecialCard } from "../redux/types";
 
 import ClickableCard from "../ClickableCard";
 
 import useStyles from "./CardSelector.styles";
 
-interface CardSelectorProps {
-  cards: (number | SpecialCard)[];
-  onSelect: (selected: number | SpecialCard) => void;
-  selectedCard?: number | SpecialCard;
-}
+function CardSelector() {
+  const dispatch = useDispatch();
 
-function CardSelector({ cards, onSelect, selectedCard }: CardSelectorProps) {
+  const cards = useCards();
+  const selectedCard = useSelectedCard();
+
   const classes = useStyles();
 
-  function handleCardSelect(card: number | SpecialCard) {
-    onSelect(card);
+  function handleCardSelect(card?: number | SpecialCard) {
+    dispatch(setSelectedCard(card));
   }
 
   return (

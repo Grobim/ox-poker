@@ -1,10 +1,12 @@
-import React, { useMemo, useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
+import { useDispatch } from "react-redux";
 import { isEmpty, isLoaded, useFirestore } from "react-redux-firebase";
 import { Redirect, useParams } from "react-router-dom";
 import firebase from "firebase/app";
 
 import Fab from "@material-ui/core/Fab";
 import Zoom from "@material-ui/core/Zoom";
+import { useTheme } from "@material-ui/core/styles";
 
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import VisibilityIcon from "@material-ui/icons/Visibility";
@@ -15,22 +17,19 @@ import { useUserId } from "../../auth";
 import {
   useActiveRoomMembers,
   useActiveRoomReadyMembers,
-  useCards,
   useRoom,
   useRoomConnect,
   useSelectedCard,
   useUserRoomMember,
 } from "../hooks";
+import { setSelectedCard } from "../redux";
+import { RoomState } from "../redux/types";
 
+import CardSelector from "../CardSelector";
 import RoomLobby from "../RoomLobby";
+import RoomResults from "../RoomResults";
 
 import useStyles from "./Room.styles";
-import { RoomState, SpecialCard } from "../redux/types";
-import { useTheme } from "@material-ui/core";
-import CardSelector from "../CardSelector";
-import { useDispatch } from "react-redux";
-import { setSelectedCard } from "../redux";
-import RoomResults from "../RoomResults";
 
 interface RoomHomeRouteParams {
   roomId: string;
@@ -41,6 +40,11 @@ function Room() {
   const firestore = useFirestore();
 
   const { roomId } = useParams<RoomHomeRouteParams>();
+  useRoomConnect(roomId);
+  const room = useRoom(roomId);
+  const members = useActiveRoomMembers();
+  const userMember = useUserRoomMember();
+  const readyMembers = useActiveRoomReadyMembers();
 
   const theme = useTheme();
   const classes = useStyles();
@@ -52,14 +56,7 @@ function Room() {
 
   const userId = useUserId();
 
-  const cards = useCards();
   const selectedCard = useSelectedCard();
-
-  useRoomConnect(roomId);
-  const room = useRoom(roomId);
-  const members = useActiveRoomMembers();
-  const userMember = useUserRoomMember();
-  const readyMembers = useActiveRoomReadyMembers();
 
   const roomRef = useMemo(() => firestore.doc(`rooms/${roomId}`), [
     firestore,
@@ -73,13 +70,13 @@ function Room() {
   const roomState = room && room.state;
 
   useEffect(() => {
-    if (roomState === RoomState.PICKING && !isEmpty(userMember)) {
+    if (roomState === RoomState.PICKING) {
       dispatch(setSelectedCard());
       userMemberRef.update({
         selectedCard: firebase.firestore.FieldValue.delete(),
       });
     }
-  }, [dispatch, userMemberRef, roomState, userMember]);
+  }, [dispatch, userMemberRef, roomState]);
 
   if (!roomId || (isLoaded(room) && isEmpty(room))) {
     return <Redirect to="/online" />;
@@ -92,10 +89,6 @@ function Room() {
     isEmpty(userMember)
   ) {
     return <div>Loading</div>;
-  }
-
-  function handleCardSelect(card?: number | SpecialCard) {
-    dispatch(setSelectedCard(card));
   }
 
   function handleStartPickingClick() {
@@ -128,11 +121,7 @@ function Room() {
       ) : userMember.isReady &&
         room.state === RoomState.PICKING &&
         typeof userMember.selectedCard === "undefined" ? (
-        <CardSelector
-          cards={cards}
-          onSelect={handleCardSelect}
-          selectedCard={selectedCard}
-        />
+        <CardSelector />
       ) : (
         userMember.isReady &&
         (room.state === RoomState.REVEALING ||
