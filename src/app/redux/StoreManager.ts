@@ -104,14 +104,7 @@ const storage = compose(
 const defaultStoreManager = new StoreManager({
   middleware: getDefaultMiddleware({
     thunk: { extraArgument: { getFirebase } },
-    serializableCheck: {
-      ignoredActions: [
-        "@@reactReduxFirebase/LOGIN",
-        "@@reduxFirestore/LISTENER_ERROR",
-        "@@reduxFirestore/SET_LISTENER",
-        "@@reduxFirestore/UNSET_LISTENER",
-      ],
-    },
+    serializableCheck: false,
   }),
   devTools: process.env.NODE_ENV !== "production",
   enhancers: [persistState(storage, "FFX-HELPER/settings") as any],

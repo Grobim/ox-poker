@@ -1,6 +1,7 @@
 import { compose, PayloadAction, Reducer } from "@reduxjs/toolkit";
 import firebase from "firebase/app";
 import "firebase/auth";
+import "firebase/database";
 import "firebase/firestore";
 import "firebase/functions";
 import {
@@ -31,6 +32,7 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
+firebase.database();
 firebase.firestore();
 firebase.functions();
 

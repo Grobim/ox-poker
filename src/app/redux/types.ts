@@ -5,6 +5,7 @@ import type { UserProfile } from "../../features/auth";
 import type {
   CardPickerState,
   Room,
+  RoomMember,
 } from "../../features/cardPicker/redux/types";
 import type { CounterState } from "../../features/counter/redux/slice";
 import type { UserSettings } from "../../features/settings";
@@ -18,6 +19,7 @@ interface FirestoreSchema {
   users: UserProfile;
   settings: UserSettings;
   rooms: Room;
+  activeRoomMembers: RoomMember;
 }
 
 interface FirestoreState<T extends Record<string, any> = FirestoreSchema> {

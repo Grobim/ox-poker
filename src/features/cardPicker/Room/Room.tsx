@@ -12,7 +12,15 @@ import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 
 import { useUserId } from "../../auth";
 
-import { useConnectedRoom, useCards, useSelectedCard } from "../hooks";
+import {
+  useActiveRoomMembers,
+  useActiveRoomReadyMembers,
+  useCards,
+  useRoom,
+  useRoomConnect,
+  useSelectedCard,
+  useUserRoomMember,
+} from "../hooks";
 
 import RoomLobby from "../RoomLobby";
 
@@ -47,13 +55,17 @@ function Room() {
   const cards = useCards();
   const selectedCard = useSelectedCard();
 
-  const { room, members, readyCount, userMember } = useConnectedRoom(roomId);
+  useRoomConnect(roomId);
+  const room = useRoom(roomId);
+  const members = useActiveRoomMembers();
+  const userMember = useUserRoomMember();
+  const readyMembers = useActiveRoomReadyMembers();
 
   const roomRef = useMemo(() => firestore.doc(`rooms/${roomId}`), [
     firestore,
     roomId,
   ]);
-  const memberRef = useMemo(
+  const userMemberRef = useMemo(
     () => firestore.doc(`rooms/${roomId}/members/${userId}`),
     [firestore, roomId, userId]
   );
@@ -61,20 +73,25 @@ function Room() {
   const roomState = room && room.state;
 
   useEffect(() => {
-    if (roomState === RoomState.PICKING) {
+    if (roomState === RoomState.PICKING && !isEmpty(userMember)) {
       dispatch(setSelectedCard());
-      memberRef.update({
+      userMemberRef.update({
         selectedCard: firebase.firestore.FieldValue.delete(),
       });
     }
-  }, [dispatch, memberRef, roomState]);
+  }, [dispatch, userMemberRef, roomState, userMember]);
 
   if (!roomId || (isLoaded(room) && isEmpty(room))) {
     return <Redirect to="/online" />;
   }
 
-  if (!isLoaded(room) || !members) {
-    return null;
+  if (
+    !isLoaded(room) ||
+    !isLoaded(members) ||
+    !isLoaded(userMember) ||
+    isEmpty(userMember)
+  ) {
+    return <div>Loading</div>;
   }
 
   function handleCardSelect(card?: number | SpecialCard) {
@@ -85,12 +102,12 @@ function Room() {
     if (userMember.isReady) {
       roomRef.update({ state: RoomState.PICKING });
     } else {
-      memberRef.update({ isReady: true });
+      userMemberRef.update({ isReady: true });
     }
   }
 
   function handlePickedClick() {
-    memberRef.update({ selectedCard });
+    userMemberRef.update({ selectedCard });
   }
 
   function handleRevealClick() {
@@ -101,11 +118,12 @@ function Room() {
     <>
       {!userMember.isReady || room.state === RoomState.LOBBY ? (
         <RoomLobby
-          roomId={roomId}
           roomState={room.state}
           userId={userId}
           members={members}
-          readyCount={readyCount}
+          readyCount={readyMembers.length}
+          userMember={userMember}
+          userMemberRef={userMemberRef}
         />
       ) : userMember.isReady &&
         room.state === RoomState.PICKING &&
@@ -127,17 +145,11 @@ function Room() {
         )
       )}
       <Zoom
-        in={
-          !userMember.isReady ||
-          room.state === RoomState.LOBBY ||
-          room.state === RoomState.REVEALING
-        }
+        in={!userMember.isReady || room.state !== RoomState.PICKING}
         timeout={transitionDuration}
         style={{
           transitionDelay: `${
-            !userMember.isReady ||
-            room.state === RoomState.LOBBY ||
-            room.state === RoomState.REVEALING
+            !userMember.isReady || room.state !== RoomState.PICKING
               ? theme.transitions.duration.leavingScreen
               : 0
           }ms`,

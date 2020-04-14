@@ -35,7 +35,7 @@ function DelayedFade(props: FadeProps) {
         clearTimeout(timeoutRef);
       }
     };
-  }, [open, exitDuration]);
+  }, [setHasWaitedEnter, open, exitDuration]);
 
   useEffect(() => {
     let timeoutRef: NodeJS.Timeout;

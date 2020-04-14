@@ -1,26 +1,32 @@
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import {
   useFirestore,
   isLoaded,
   isEmpty,
   useFirestoreConnect,
+  useFirebase,
 } from "react-redux-firebase";
-import filter from "lodash/filter";
+import firebaseLib from "firebase/app";
 
-import type { RootState, FirestoreSchema } from "../../app/redux";
 import { useProfile, useUserId } from "../auth";
 
 import {
+  selectActiveRoomMembers,
   selectCards,
   selectRooms,
   selectSelectedCard,
+  selectUserRoomMember,
+  selectActiveRoomReadyMembers,
 } from "./redux/selectors";
-import type { RoomMember } from "./redux/types";
 
 const useCards = () => useSelector(selectCards);
 const useSelectedCard = () => useSelector(selectSelectedCard);
 const useRooms = () => useSelector(selectRooms);
+const useActiveRoomMembers = () => useSelector(selectActiveRoomMembers);
+const useUserRoomMember = () => useSelector(selectUserRoomMember);
+const useActiveRoomReadyMembers = () =>
+  useSelector(selectActiveRoomReadyMembers);
 
 const useRoom = (roomId: string) => {
   const rooms = useRooms();
@@ -28,8 +34,9 @@ const useRoom = (roomId: string) => {
   return rooms && rooms[roomId];
 };
 
-const useRegisterToRoom = (roomId: string) => {
+const useRoomPresence = (roomId: string) => {
   const firestore = useFirestore();
+  const firebase = useFirebase();
 
   const userId = useUserId();
   const profile = useProfile();
@@ -39,31 +46,48 @@ const useRegisterToRoom = (roomId: string) => {
 
   useEffect(() => {
     if (roomExists && userId) {
+      const userStatusDatabaseRef = firebase.ref(`/roomPresence/${userId}`);
       const memberRef = firestore
         .collection(`rooms/${roomId}/members`)
         .doc(userId);
 
-      memberRef.set(
-        {
-          displayName: (profile && profile.displayName) || "",
-          avatarUrl: null,
-          isReady: false,
-        },
-        { merge: true }
-      );
+      firebase.ref(".info/connected").on("value", (snapshot) => {
+        if (!snapshot.val()) {
+          memberRef.delete();
+          return;
+        }
+
+        userStatusDatabaseRef
+          .onDisconnect()
+          .set({ timestamp: firebaseLib.database.ServerValue.TIMESTAMP })
+          .then(() => {
+            userStatusDatabaseRef.set({
+              path: `/rooms/${roomId}/members/${userId}`,
+              timestamp: firebaseLib.database.ServerValue.TIMESTAMP,
+            });
+            memberRef.set(
+              {
+                displayName: (profile && profile.displayName) || "",
+                avatarUrl: null,
+                isReady: false,
+              },
+              { merge: true }
+            );
+          });
+      });
 
       return () => {
         memberRef.delete();
+        firebase.ref(".info/connected").off("value");
+        userStatusDatabaseRef.set({
+          timestamp: firebaseLib.database.ServerValue.TIMESTAMP,
+        });
       };
     }
-  }, [firestore, roomExists, roomId, userId, profile]);
+  }, [firebase, firestore, roomExists, roomId, userId, profile]);
 };
 
-interface FirestoreSchemaWithMembers extends FirestoreSchema {
-  activeRoomMembers: RoomMember;
-}
-
-const useConnectedRoom = (roomId: string) => {
+const useRoomConnect = (roomId: string) => {
   useFirestoreConnect([
     {
       collection: "rooms",
@@ -74,45 +98,16 @@ const useConnectedRoom = (roomId: string) => {
       storeAs: "activeRoomMembers",
     },
   ]);
-  useRegisterToRoom(roomId);
-
-  const userId = useUserId();
-
-  const room = useRoom(roomId);
-  const members = useSelector(
-    (state: RootState<FirestoreSchemaWithMembers>) =>
-      state.firestore.data.activeRoomMembers
-  );
-
-  const userMember = useMemo(
-    () =>
-      isLoaded(members) &&
-      !isEmpty(members) &&
-      !isEmpty(members[userId]) &&
-      members[userId],
-    [members, userId]
-  ) as RoomMember;
-
-  const readyCount = useMemo(
-    () =>
-      (isLoaded(members) &&
-        filter(members, (member) => member.isReady).length) ||
-      0,
-    [members]
-  );
-
-  return {
-    room,
-    members,
-    userMember,
-    readyCount,
-  };
+  useRoomPresence(roomId);
 };
 
 export {
   useCards,
   useSelectedCard,
   useRoom,
-  useRegisterToRoom,
-  useConnectedRoom,
+  useRoomPresence,
+  useRoomConnect,
+  useActiveRoomMembers,
+  useUserRoomMember,
+  useActiveRoomReadyMembers,
 };

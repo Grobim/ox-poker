@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-import { isEmpty, useFirestore } from "react-redux-firebase";
 import firebase from "firebase/app";
 
 import Grid from "@material-ui/core/Grid";
@@ -17,29 +16,25 @@ import VisibilitySettings from "../VisibilitySettings";
 import useStyles from "./RoomLobby.styles";
 
 interface RoomLobbyProps {
-  roomId: string;
   roomState: RoomState;
   userId: string;
   members: Record<string, RoomMember>;
+  userMember: RoomMember;
+  userMemberRef: firebase.firestore.DocumentReference;
   readyCount: number;
 }
 
 function RoomLobby({
-  roomId,
   roomState,
-  members,
   userId,
+  members,
+  userMember,
+  userMemberRef,
   readyCount,
 }: RoomLobbyProps) {
-  const firestore = useFirestore();
-
   const classes = useStyles();
 
-  const memberCount = useMemo(() => Object.keys(members || {}).length, [
-    members,
-  ]);
-
-  const userMemberRef = firestore.doc(`rooms/${roomId}/members/${userId}`);
+  const memberCount = useMemo(() => Object.keys(members).length, [members]);
 
   function handleVisibilitySave(roomMember: RoomMember) {
     const { avatarUrl = firebase.firestore.FieldValue.delete() } = roomMember;
@@ -56,16 +51,14 @@ function RoomLobby({
 
   return (
     <Grid container spacing={2}>
-      {!isEmpty(members[userId]) && (
-        <Grid item xs={12}>
-          <VisibilitySettings
-            member={members[userId]}
-            onSave={handleVisibilitySave}
-            hideAction={roomState !== RoomState.LOBBY}
-            onReadyClick={handleReadyClick}
-          />
-        </Grid>
-      )}
+      <Grid item xs={12}>
+        <VisibilitySettings
+          member={userMember}
+          onSave={handleVisibilitySave}
+          hideAction={roomState !== RoomState.LOBBY}
+          onReadyClick={handleReadyClick}
+        />
+      </Grid>
       <Grid item xs={12}>
         <RoomMemberList
           userId={userId}
