@@ -17,15 +17,18 @@ import useStyles from "./RoomResults.styles";
 interface RoomResultsProps {
   userId: string;
   members: Record<string, RoomMember>;
-  hide?: boolean;
+  hideResults?: boolean;
 }
 
-function RoomResults({ userId, members, hide = false }: RoomResultsProps) {
+function RoomResults({
+  userId,
+  members,
+  hideResults = false,
+}: RoomResultsProps) {
   const classes = useStyles();
 
   return (
     <RoomMemberList
-      userId={userId}
       members={members}
       getSecondaryAction={(member, memberId) => {
         let actionIcon = null;
@@ -33,7 +36,7 @@ function RoomResults({ userId, members, hide = false }: RoomResultsProps) {
         if (!member.isReady) {
           actionIcon = <LockIcon />;
         } else if (typeof member.selectedCard !== "undefined") {
-          if (userId === memberId || !hide) {
+          if (userId === memberId || !hideResults) {
             if (member.selectedCard === SpecialCard.LONG) {
               actionIcon = <HourglassFullIcon />;
             } else if (member.selectedCard === SpecialCard.PAUSE) {

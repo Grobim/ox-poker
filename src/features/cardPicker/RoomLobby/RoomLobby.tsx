@@ -7,7 +7,6 @@ import ListSubheader from "@material-ui/core/ListSubheader";
 
 import DoneIcon from "@material-ui/icons/Done";
 
-import { RoomState } from "../redux/types";
 import type { RoomMember } from "../redux/types";
 
 import RoomMemberList from "../RoomMemberList";
@@ -16,8 +15,6 @@ import VisibilitySettings from "../VisibilitySettings";
 import useStyles from "./RoomLobby.styles";
 
 interface RoomLobbyProps {
-  roomState: RoomState;
-  userId: string;
   members: Record<string, RoomMember>;
   userMember: RoomMember;
   userMemberRef: firebase.firestore.DocumentReference;
@@ -25,8 +22,6 @@ interface RoomLobbyProps {
 }
 
 function RoomLobby({
-  roomState,
-  userId,
   members,
   userMember,
   userMemberRef,
@@ -55,13 +50,11 @@ function RoomLobby({
         <VisibilitySettings
           member={userMember}
           onSave={handleVisibilitySave}
-          hideAction={roomState !== RoomState.LOBBY}
           onReadyClick={handleReadyClick}
         />
       </Grid>
       <Grid item xs={12}>
         <RoomMemberList
-          userId={userId}
           members={members}
           aria-labelledby="member-list-subheader"
           subheader={

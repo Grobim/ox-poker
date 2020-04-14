@@ -92,11 +92,7 @@ function Room() {
   }
 
   function handleStartPickingClick() {
-    if (userMember.isReady) {
-      roomRef.update({ state: RoomState.PICKING });
-    } else {
-      userMemberRef.update({ isReady: true });
-    }
+    roomRef.update({ state: RoomState.PICKING });
   }
 
   function handlePickedClick() {
@@ -111,8 +107,6 @@ function Room() {
     <>
       {!userMember.isReady || room.state === RoomState.LOBBY ? (
         <RoomLobby
-          roomState={room.state}
-          userId={userId}
           members={members}
           readyCount={readyMembers.length}
           userMember={userMember}
@@ -129,7 +123,7 @@ function Room() {
           <RoomResults
             userId={userId}
             members={members}
-            hide={room.state === RoomState.PICKING}
+            hideResults={room.state === RoomState.PICKING}
           />
         )
       )}
@@ -144,7 +138,11 @@ function Room() {
           }ms`,
         }}
       >
-        <Fab className={classes.fab} onClick={handleStartPickingClick}>
+        <Fab
+          disabled={!userMember.isReady}
+          className={classes.fab}
+          onClick={handleStartPickingClick}
+        >
           <PlayArrowIcon />
         </Fab>
       </Zoom>

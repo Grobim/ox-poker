@@ -7,20 +7,22 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import ListItemText from "@material-ui/core/ListItemText";
 
+import { useUserId } from "../../auth";
+
 import type { RoomMember } from "../redux/types";
 
 interface RoomMemberListProps extends ListProps {
-  userId?: string;
   members: Record<string, RoomMember>;
   getSecondaryAction?: (member: RoomMember, memberId: string) => unknown;
 }
 
 function RoomMemberList({
   members,
-  userId,
   getSecondaryAction,
   ...props
 }: RoomMemberListProps) {
+  const userId = useUserId();
+
   return (
     <List {...props}>
       {map(members, (member, memberId: string) => (

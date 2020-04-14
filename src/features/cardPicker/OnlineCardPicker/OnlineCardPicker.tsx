@@ -1,6 +1,7 @@
 import React from "react";
 import { Route, Switch, useRouteMatch } from "react-router-dom";
 
+import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 
 import storeManager from "../../../app/redux/StoreManager";
@@ -8,6 +9,7 @@ import storeManager from "../../../app/redux/StoreManager";
 import { name, reducer } from "../redux/slice";
 
 import Room from "../Room";
+import RoomAltActions from "../RoomAltActions";
 import RoomCreator from "../RoomCreator";
 import RoomHome from "../RoomHome";
 
@@ -30,22 +32,36 @@ function OnlineCardPicker() {
   const { path } = useRouteMatch();
 
   return (
-    <div className="OnlineCardPicker">
-      <Typography variant="h4" gutterBottom>
-        OnlineCardPicker
-      </Typography>
-      <Switch>
-        <Route exact path={path}>
-          <RoomHome />
-        </Route>
-        <Route path={`${path}/new-room`}>
-          <RoomCreator />
-        </Route>
-        <Route path={`${path}/:roomId`}>
-          <Room />
-        </Route>
-      </Switch>
-    </div>
+    <Grid container direction="column">
+      <Grid item container justify="space-between">
+        <Grid item>
+          <Typography variant="h4" gutterBottom>
+            OnlineCardPicker
+          </Typography>
+        </Grid>
+        <Grid item>
+          <Switch>
+            <Route path={`${path}/new-room`}></Route>
+            <Route path={`${path}/:roomId`}>
+              <RoomAltActions />
+            </Route>
+          </Switch>
+        </Grid>
+      </Grid>
+      <Grid item>
+        <Switch>
+          <Route exact path={path}>
+            <RoomHome />
+          </Route>
+          <Route path={`${path}/new-room`}>
+            <RoomCreator />
+          </Route>
+          <Route path={`${path}/:roomId`}>
+            <Room />
+          </Route>
+        </Switch>
+      </Grid>
+    </Grid>
   );
 }
 

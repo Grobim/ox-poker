@@ -19,14 +19,12 @@ import useStyles from "./VisibilitySettings.styles";
 interface VisibilitySettingsProps {
   member: RoomMember;
   onSave: (roomMember: RoomMember) => void;
-  hideAction?: boolean;
   onReadyClick?: (ready: boolean) => void;
 }
 
 function VisibilitySettings({
   member,
   onSave,
-  hideAction = false,
   onReadyClick,
 }: VisibilitySettingsProps) {
   const { displayName, avatarUrl, isReady } = member;
@@ -103,18 +101,16 @@ function VisibilitySettings({
           </Grid>
         </form>
       </CardContent>
-      {!hideAction && (
-        <CardActions disableSpacing>
-          <Button
-            variant="contained"
-            className={classes.readyButton}
-            disabled={!name}
-            onClick={handleReadyClick}
-          >
-            Ready
-          </Button>
-        </CardActions>
-      )}
+      <CardActions disableSpacing>
+        <Button
+          variant="contained"
+          className={classes.readyButton}
+          disabled={!name}
+          onClick={handleReadyClick}
+        >
+          Ready
+        </Button>
+      </CardActions>
     </Card>
   );
 }
