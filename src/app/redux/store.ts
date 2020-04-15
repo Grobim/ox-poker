@@ -4,6 +4,7 @@ import "firebase/auth";
 import "firebase/database";
 import "firebase/firestore";
 import "firebase/functions";
+import "firebase/storage";
 import {
   firebaseReducer,
   FirebaseReducer,
@@ -35,6 +36,7 @@ firebase.initializeApp(firebaseConfig);
 firebase.database();
 firebase.firestore();
 firebase.functions();
+firebase.storage();
 
 function mergeOfflineOverride(next: Function) {
   return (state: any, action: PayloadAction<Record<string, unknown>>) => {

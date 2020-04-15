@@ -4,7 +4,7 @@ import React, { useMemo } from "react";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 
-import { useSyncedUserSettings } from "../../features/settings";
+import { useSyncedUserSettings } from "../../features/profile";
 
 import HandleAnonymousSession from "../HandleAnonymousSession";
 import Layout from "../Layout";

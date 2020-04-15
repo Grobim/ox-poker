@@ -6,6 +6,7 @@ interface UserProfile {
   avatarUrl: string;
   displayName: string;
   email: string;
+  showAvatar: boolean;
   providerData?: Record<string, any>[];
   role?: string;
 }

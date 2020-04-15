@@ -27,7 +27,7 @@ function VisibilitySettings({
   onSave,
   onReadyClick,
 }: VisibilitySettingsProps) {
-  const { displayName, avatarUrl, isReady } = member;
+  const { displayName, isReady } = member;
 
   const auth = useAuth();
   const profile = useProfile();
@@ -35,7 +35,7 @@ function VisibilitySettings({
   const classes = useStyles();
 
   const [name, setName] = useState(displayName);
-  const [shouldShowAvatar, setShouldShowAvatar] = useState(!!avatarUrl);
+  const [shouldShowAvatar, setShouldShowAvatar] = useState(profile.showAvatar);
 
   function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
     setName(event.target.value);
@@ -88,7 +88,9 @@ function VisibilitySettings({
             </Grid>
             <Grid item xs={12}>
               <FormControlLabel
-                disabled={!isLoaded(auth) || auth.isAnonymous}
+                disabled={
+                  !isLoaded(auth) || auth.isAnonymous || !isLoaded(profile)
+                }
                 label="Show avatar"
                 control={
                   <Switch

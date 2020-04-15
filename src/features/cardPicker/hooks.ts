@@ -68,7 +68,10 @@ const useRoomPresence = (roomId: string) => {
             memberRef.set(
               {
                 displayName: (profile && profile.displayName) || "",
-                avatarUrl: null,
+                avatarUrl:
+                  profile && profile.showAvatar
+                    ? profile.avatarUrl || null
+                    : null,
                 isReady: false,
               },
               { merge: true }

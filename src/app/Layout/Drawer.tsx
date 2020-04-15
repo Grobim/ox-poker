@@ -8,7 +8,7 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import ForwardIcon from "@material-ui/icons/Forward";
 import PeopleIcon from "@material-ui/icons/People";
-import SettingsIcon from "@material-ui/icons/Settings";
+import PersonIcon from "@material-ui/icons/Person";
 import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 import clsx from "clsx";
 import React, {
@@ -82,11 +82,11 @@ function Drawer({ mobileOpen, onMenuClose }: DrawerProps) {
         </ListItem>
       )}
       <List component="div">
-        <ListItem component={forwardRef(NavListItem)} to="/settings">
+        <ListItem component={forwardRef(NavListItem)} to="/profile">
           <ListItemIcon>
-            <SettingsIcon />
+            <PersonIcon />
           </ListItemIcon>
-          <ListItemText primary="Settings" />
+          <ListItemText primary="Profile" />
         </ListItem>
       </List>
     </div>

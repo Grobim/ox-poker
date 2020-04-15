@@ -22,8 +22,8 @@ const OnlineCardPicker = loadableWithRefreshedStore(() =>
 const UserList = loadableWithRefreshedStore(() =>
   import(/* webpackChunkName: "userList" */ "../../features/users/UserList")
 );
-const Settings = loadableWithRefreshedStore(() =>
-  import(/* webpackChunkName: "settings" */ "../../features/settings/Settings")
+const Profile = loadableWithRefreshedStore(() =>
+  import(/* webpackChunkName: "settings" */ "../../features/profile/Profile")
 );
 const Login = loadableWithRefreshedStore(() =>
   import(/* webpackChunkName: "login" */ "../../features/auth/Login")
@@ -47,8 +47,8 @@ function MainRoutes() {
       <Route path="/login">
         <Login />
       </Route>
-      <Route path="/settings">
-        <Settings />
+      <Route path="/profile">
+        <Profile />
       </Route>
       <Route path="*">
         <div>404 mamène</div>
