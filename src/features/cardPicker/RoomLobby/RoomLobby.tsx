@@ -1,37 +1,70 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 import firebase from "firebase/app";
 
+import Card from "@material-ui/core/Card";
+import Divider from "@material-ui/core/Divider";
 import Grid from "@material-ui/core/Grid";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ListSubheader from "@material-ui/core/ListSubheader";
 
 import DoneIcon from "@material-ui/icons/Done";
 
-import type { RoomMember } from "../redux/types";
+import { useUserId } from "../../auth";
+
+import type { Room, RoomMember } from "../redux/types";
 
 import RoomMemberList from "../RoomMemberList";
+import RoomSettings from "../RoomSettings";
 import VisibilitySettings from "../VisibilitySettings";
 
 import useStyles from "./RoomLobby.styles";
 
 interface RoomLobbyProps {
+  room: Room;
+  roomRef: firebase.firestore.DocumentReference;
   members: Record<string, RoomMember>;
   userMember: RoomMember;
   userMemberRef: firebase.firestore.DocumentReference;
   readyCount: number;
 }
 
+interface RoomLobbyRouteState {
+  newRoom?: boolean;
+}
+
 function RoomLobby({
+  room,
+  roomRef,
   members,
   userMember,
   userMemberRef,
   readyCount,
 }: RoomLobbyProps) {
+  const { newRoom = false } = useLocation<RoomLobbyRouteState>().state || {};
+
   const classes = useStyles();
+
+  const userId = useUserId();
 
   const memberCount = useMemo(() => Object.keys(members).length, [members]);
 
-  function handleVisibilitySave(roomMember: RoomMember) {
+  const [expandRoomSettings, setExpandRoomSettings] = useState(newRoom);
+
+  function handleRoomSave(room: Partial<Room>) {
+    const { displayName = firebase.firestore.FieldValue.delete() } = room;
+
+    roomRef.update({
+      ...room,
+      displayName,
+    });
+  }
+
+  function handleRoomSettingsClose() {
+    setExpandRoomSettings(!expandRoomSettings);
+  }
+
+  function handleVisibilitySave(roomMember: Partial<RoomMember>) {
     const { avatarUrl = firebase.firestore.FieldValue.delete() } = roomMember;
 
     userMemberRef.update({
@@ -47,11 +80,25 @@ function RoomLobby({
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
-        <VisibilitySettings
-          member={userMember}
-          onSave={handleVisibilitySave}
-          onReadyClick={handleReadyClick}
-        />
+        <Card>
+          {room.owner === userId && (
+            <>
+              <RoomSettings
+                room={room}
+                expanded={expandRoomSettings}
+                onSave={handleRoomSave}
+                onCloseClick={handleRoomSettingsClose}
+              />
+              <Divider />
+            </>
+          )}
+          <VisibilitySettings
+            member={userMember}
+            expanded={!expandRoomSettings && !userMember.isReady}
+            onSave={handleVisibilitySave}
+            onReadyClick={handleReadyClick}
+          />
+        </Card>
       </Grid>
       <Grid item xs={12}>
         <RoomMemberList
@@ -75,5 +122,5 @@ function RoomLobby({
   );
 }
 
-export type { RoomLobbyProps };
+export type { RoomLobbyProps, RoomLobbyRouteState };
 export default RoomLobby;

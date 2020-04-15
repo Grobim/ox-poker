@@ -7,7 +7,7 @@ const deleteExpiredRooms = functions
   .https
   .onRequest(async (_, res) => {
     const maxLastSessionEnd = admin.firestore.Timestamp
-      .fromDate(moment().add(-1, "M").toDate());
+      .fromDate(moment(admin.firestore.Timestamp.now()).add(-1, "M").toDate());
     const expiredRooms = await functions.app.admin
       .firestore()
       .collection("rooms")

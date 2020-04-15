@@ -9,9 +9,10 @@ import Typography from "@material-ui/core/Typography";
 import { useUserId } from "../../auth";
 
 import { RoomState } from "../redux/types";
+import type { RoomLobbyRouteState } from "../RoomLobby";
 
 function RoomCreator() {
-  const history = useHistory();
+  const history = useHistory<RoomLobbyRouteState>();
   const firestore = useFirestore();
 
   const userId = useUserId();
@@ -24,7 +25,7 @@ function RoomCreator() {
         state: RoomState.LOBBY,
       })
       .then((newRoomRef) => {
-        history.replace(`/online/${newRoomRef.id}`);
+        history.replace(`/online/${newRoomRef.id}`, { newRoom: true });
       });
   }, [firestore, history, userId]);
 

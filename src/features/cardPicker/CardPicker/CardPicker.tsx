@@ -94,7 +94,7 @@ function CardPicker() {
         <Typography variant="h4" className={classes.title}>
           CardPicker
         </Typography>
-        {pickState === PickState.PICKING && (
+        <DelayedFade in={pickState === PickState.PICKING}>
           <IconButton
             className={clsx({
               [classes.editIconEditing]: isEditing,
@@ -103,7 +103,7 @@ function CardPicker() {
           >
             <EditIcon />
           </IconButton>
-        )}
+        </DelayedFade>
       </Grid>
       <Grid item className={classes.content}>
         <DelayedFade in={pickState === PickState.PICKING}>

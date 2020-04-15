@@ -1,5 +1,5 @@
 import { createSelector } from "@reduxjs/toolkit";
-import filter from "lodash/filter";
+import pickBy from "lodash/pickBy";
 
 import { RootState } from "../../../app/redux";
 
@@ -19,7 +19,7 @@ const selectUserRoomMember = createSelector(
 
 const selectActiveRoomReadyMembers = createSelector(
   [selectActiveRoomMembers],
-  (members) => filter(members, (member) => member.isReady)
+  (members) => pickBy(members, (member) => member.isReady)
 );
 
 export {

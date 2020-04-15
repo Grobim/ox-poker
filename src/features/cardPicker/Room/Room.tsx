@@ -78,7 +78,7 @@ function Room() {
     }
   }, [dispatch, userMemberRef, roomState]);
 
-  if (!roomId || (isLoaded(room) && isEmpty(room))) {
+  if (isLoaded(room) && isEmpty(room)) {
     return <Redirect to="/online" />;
   }
 
@@ -107,8 +107,10 @@ function Room() {
     <>
       {!userMember.isReady || room.state === RoomState.LOBBY ? (
         <RoomLobby
+          room={room}
+          roomRef={roomRef}
           members={members}
-          readyCount={readyMembers.length}
+          readyCount={Object.keys(readyMembers).length}
           userMember={userMember}
           userMemberRef={userMemberRef}
         />
@@ -122,7 +124,7 @@ function Room() {
           typeof userMember.selectedCard !== "undefined") && (
           <RoomResults
             userId={userId}
-            members={members}
+            members={readyMembers}
             hideResults={room.state === RoomState.PICKING}
           />
         )

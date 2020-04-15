@@ -11,6 +11,7 @@ enum SpecialCard {
 interface Room {
   owner: string;
   state: RoomState;
+  displayName?: string;
 }
 
 interface RoomMember {

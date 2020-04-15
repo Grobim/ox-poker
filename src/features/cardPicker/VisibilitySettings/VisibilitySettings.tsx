@@ -1,11 +1,12 @@
-import React, { ChangeEvent, FormEvent, useState } from "react";
+import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { isEmpty, isLoaded } from "react-redux-firebase";
 
 import Button from "@material-ui/core/Button";
-import Card from "@material-ui/core/Card";
+import CardActionArea from "@material-ui/core/CardActionArea";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import CardHeader from "@material-ui/core/CardHeader";
+import Collapse from "@material-ui/core/Collapse";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Grid from "@material-ui/core/Grid";
 import Switch from "@material-ui/core/Switch";
@@ -18,14 +19,16 @@ import useStyles from "./VisibilitySettings.styles";
 
 interface VisibilitySettingsProps {
   member: RoomMember;
-  onSave: (roomMember: RoomMember) => void;
+  onSave: (roomMember: Partial<RoomMember>) => void;
   onReadyClick?: (ready: boolean) => void;
+  expanded: boolean;
 }
 
 function VisibilitySettings({
   member,
   onSave,
   onReadyClick,
+  expanded,
 }: VisibilitySettingsProps) {
   const { displayName, isReady } = member;
 
@@ -33,9 +36,15 @@ function VisibilitySettings({
   const profile = useProfile();
 
   const classes = useStyles();
+  const header = <CardHeader title="Setup" />;
 
   const [name, setName] = useState(displayName);
   const [shouldShowAvatar, setShouldShowAvatar] = useState(profile.showAvatar);
+  const [isExpanded, setIsExpanded] = useState(expanded);
+
+  useEffect(() => {
+    setIsExpanded(expanded);
+  }, [expanded]);
 
   function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
     setName(event.target.value);
@@ -58,7 +67,6 @@ function VisibilitySettings({
 
   function saveVisibility(newName = name, newShowAvatar = shouldShowAvatar) {
     onSave({
-      ...member,
       displayName: newName,
       avatarUrl:
         newShowAvatar && isLoaded(profile) && !isEmpty(profile)
@@ -69,51 +77,69 @@ function VisibilitySettings({
 
   function handleReadyClick() {
     onReadyClick && onReadyClick(!isReady);
+
+    if (!member.isReady) {
+      setIsExpanded(false);
+    }
+  }
+
+  function handleHeaderClick() {
+    setIsExpanded(!isExpanded);
+
+    if (!isExpanded) {
+      onReadyClick && onReadyClick(false);
+    }
   }
 
   return (
-    <Card>
-      <CardHeader title="Setup" />
-      <CardContent>
-        <form noValidate autoComplete="off" onSubmit={handleFormSubmit}>
-          <Grid container spacing={1}>
-            <Grid item xs={12}>
-              <TextField
-                value={name}
-                onBlur={handleInputBlur}
-                onChange={handleInputChange}
-                label="Display name"
-                fullWidth
-              />
+    <>
+      {!isExpanded ? (
+        <CardActionArea onClick={handleHeaderClick}>{header}</CardActionArea>
+      ) : (
+        header
+      )}
+      <Collapse in={isExpanded}>
+        <CardContent>
+          <form noValidate autoComplete="off" onSubmit={handleFormSubmit}>
+            <Grid container spacing={1}>
+              <Grid item xs={12}>
+                <TextField
+                  value={name}
+                  onBlur={handleInputBlur}
+                  onChange={handleInputChange}
+                  label="Display name"
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <FormControlLabel
+                  disabled={
+                    !isLoaded(auth) || auth.isAnonymous || !isLoaded(profile)
+                  }
+                  label="Show avatar"
+                  control={
+                    <Switch
+                      checked={shouldShowAvatar}
+                      onChange={handleAvatarVisibilityChange}
+                    />
+                  }
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={12}>
-              <FormControlLabel
-                disabled={
-                  !isLoaded(auth) || auth.isAnonymous || !isLoaded(profile)
-                }
-                label="Show avatar"
-                control={
-                  <Switch
-                    checked={shouldShowAvatar}
-                    onChange={handleAvatarVisibilityChange}
-                  />
-                }
-              />
-            </Grid>
-          </Grid>
-        </form>
-      </CardContent>
-      <CardActions disableSpacing>
-        <Button
-          variant="contained"
-          className={classes.readyButton}
-          disabled={!name}
-          onClick={handleReadyClick}
-        >
-          Ready
-        </Button>
-      </CardActions>
-    </Card>
+          </form>
+        </CardContent>
+        <CardActions disableSpacing>
+          <Button
+            variant="contained"
+            className={classes.readyButton}
+            disabled={!name}
+            onClick={handleReadyClick}
+          >
+            Ready
+          </Button>
+        </CardActions>
+      </Collapse>
+    </>
   );
 }
 

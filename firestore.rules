@@ -23,7 +23,11 @@ service cloud.firestore {
         allow create: if request.auth.uid == request.resource.data.owner;
         allow update: if request.auth.uid != null
           && (request.resource.data.owner == request.auth.uid
-            || request.resource.data.state != resource.data.state);
+            || (request.resource.data.state != resource.data.state &&
+              request.resource.data.owner == resource.data.owner &&
+              request.resource.data.displayName == resource.data.displayName &&
+              request.resource.data.lastSessionEnd == resource.data.lastSessionEnd &&
+              request.resource.data.size() == 4));
         allow delete: if false;
 
         match /members/{userId} {
