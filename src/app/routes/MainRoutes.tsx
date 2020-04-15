@@ -14,11 +14,16 @@ const CardPicker = loadableWithRefreshedStore(() =>
     /* webpackChunkName: "cardPicker" */ "../../features/cardPicker/CardPicker"
   )
 );
+const OnlineCardPicker = loadableWithRefreshedStore(() =>
+  import(
+    /* webpackChunkName: "onlineCardPicker" */ "../../features/cardPicker/OnlineCardPicker"
+  )
+);
 const UserList = loadableWithRefreshedStore(() =>
   import(/* webpackChunkName: "userList" */ "../../features/users/UserList")
 );
-const Settings = loadableWithRefreshedStore(() =>
-  import(/* webpackChunkName: "settings" */ "../../features/settings/Settings")
+const Profile = loadableWithRefreshedStore(() =>
+  import(/* webpackChunkName: "settings" */ "../../features/profile/Profile")
 );
 const Login = loadableWithRefreshedStore(() =>
   import(/* webpackChunkName: "login" */ "../../features/auth/Login")
@@ -33,14 +38,17 @@ function MainRoutes() {
       <Route exact path="/local">
         <CardPicker />
       </Route>
+      <Route path="/online">
+        <OnlineCardPicker />
+      </Route>
       <PrivateRoute path="/users" role={Role.ADMIN}>
         <UserList />
       </PrivateRoute>
       <Route path="/login">
         <Login />
       </Route>
-      <Route path="/settings">
-        <Settings />
+      <Route path="/profile">
+        <Profile />
       </Route>
       <Route path="*">
         <div>404 mamène</div>

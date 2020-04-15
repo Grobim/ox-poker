@@ -1,22 +1,23 @@
 import React from "react";
+import clsx from "clsx";
 
 import Card from "@material-ui/core/Card";
 import CardActionArea from "@material-ui/core/CardActionArea";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
+
 import HourglassFullIcon from "@material-ui/icons/HourglassFull";
 import LocalCafeIcon from "@material-ui/icons/LocalCafe";
 
 import { SpecialCard } from "../redux/types";
 
 import useStyles from "./ClickableCard.styles";
-import clsx from "clsx";
 
 interface ClickableCardProps {
   card: number | SpecialCard;
   className?: string;
   contentClassName?: string;
-  onSelect: (selectedCard: number | SpecialCard) => void;
+  onSelect: (selectedCard?: number | SpecialCard) => void;
   fontSize?: number | string;
 }
 

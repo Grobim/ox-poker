@@ -16,5 +16,21 @@ service cloud.firestore {
         allow read, write: if false;
       }
     }
+
+    match /rooms {
+      match /{roomId} {
+        allow read: if request.auth.uid != null;
+        allow create: if request.auth.uid == request.resource.data.owner;
+        allow update: if request.auth.uid != null
+          && (request.resource.data.owner == request.auth.uid
+            || request.resource.data.state != resource.data.state);
+        allow delete: if false;
+
+        match /members/{userId} {
+          allow read;
+          allow write: if request.auth.uid == userId;
+        }
+      }
+    }
   }
 }

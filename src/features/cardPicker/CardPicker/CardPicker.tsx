@@ -62,10 +62,6 @@ function CardPicker() {
   const [pickState, setPickState] = useState(PickState.PICKING);
   const [isEditing, setIsEditing] = useState(false);
 
-  function handleCardSelect(card: number | SpecialCard) {
-    dispatch(setSelectedCard(card));
-  }
-
   function handleCardHiderClick() {
     setPickState(PickState.REVEALED);
   }
@@ -117,7 +113,7 @@ function CardPicker() {
               onCardsChange={handleEditableCardsChange}
             />
           ) : (
-            <CardSelector cards={cards} onSelect={handleCardSelect} />
+            <CardSelector />
           )}
         </DelayedFade>
         <DelayedFade in={pickState === PickState.HIDDEN}>

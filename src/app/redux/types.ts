@@ -2,9 +2,13 @@ import { Dispatch } from "@reduxjs/toolkit";
 import { getFirebase, FirebaseReducer } from "react-redux-firebase";
 
 import type { UserProfile } from "../../features/auth";
-import type { CardPickerState } from "../../features/cardPicker/redux/types";
+import type {
+  CardPickerState,
+  Room,
+  RoomMember,
+} from "../../features/cardPicker/redux/types";
 import type { CounterState } from "../../features/counter/redux/slice";
-import type { UserSettings } from "../../features/settings";
+import type { UserSettings } from "../../features/profile";
 import type { UsersState } from "../../features/users/redux/types";
 
 interface AppState {
@@ -14,6 +18,8 @@ interface AppState {
 interface FirestoreSchema {
   users: UserProfile;
   settings: UserSettings;
+  rooms: Room;
+  activeRoomMembers: RoomMember;
 }
 
 interface FirestoreState<T extends Record<string, any> = FirestoreSchema> {
@@ -29,13 +35,13 @@ interface FirestoreState<T extends Record<string, any> = FirestoreSchema> {
   queries: any;
 }
 
-interface RootState {
+interface RootState<Schema = FirestoreSchema> {
   app: AppState;
   cardPicker: CardPickerState;
   counter: CounterState;
   users: UsersState;
   firebase: FirebaseReducer.Reducer<UserProfile>;
-  firestore: FirestoreState;
+  firestore: FirestoreState<Schema>;
 }
 
 type AppThunkApiConfig = {

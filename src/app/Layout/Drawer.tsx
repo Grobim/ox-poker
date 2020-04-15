@@ -8,7 +8,8 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import ForwardIcon from "@material-ui/icons/Forward";
 import PeopleIcon from "@material-ui/icons/People";
-import SettingsIcon from "@material-ui/icons/Settings";
+import PersonIcon from "@material-ui/icons/Person";
+import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 import clsx from "clsx";
 import React, {
   ElementRef,
@@ -39,7 +40,7 @@ function Drawer({ mobileOpen, onMenuClose }: DrawerProps) {
   const isAdmin = useIsRole(Role.ADMIN);
 
   function NavListItem(
-    { children, className, ...props }: NavListItemProps,
+    { className, ...props }: NavListItemProps,
     ref: ElementRef<any>
   ) {
     return (
@@ -50,9 +51,7 @@ function Drawer({ mobileOpen, onMenuClose }: DrawerProps) {
         ref={ref}
         activeClassName={classes.activeLink}
         {...props}
-      >
-        {children}
-      </Button>
+      />
     );
   }
 
@@ -66,22 +65,28 @@ function Drawer({ mobileOpen, onMenuClose }: DrawerProps) {
           </ListItemIcon>
           <ListItemText primary="Local" />
         </ListItem>
-        {isAdmin && (
-          <ListItem component={forwardRef(NavListItem)} to="/users">
-            <ListItemIcon>
-              <PeopleIcon />
-            </ListItemIcon>
-            <ListItemText primary="Users" />
-          </ListItem>
-        )}
+        <ListItem component={forwardRef(NavListItem)} to="/online">
+          <ListItemIcon>
+            <PeopleIcon />
+          </ListItemIcon>
+          <ListItemText primary="Online" />
+        </ListItem>
       </List>
       <Divider />
-      <List component="div">
-        <ListItem component={forwardRef(NavListItem)} to="/settings">
+      {isAdmin && (
+        <ListItem component={forwardRef(NavListItem)} to="/users">
           <ListItemIcon>
-            <SettingsIcon />
+            <SupervisorAccountIcon />
           </ListItemIcon>
-          <ListItemText primary="Settings" />
+          <ListItemText primary="Users" />
+        </ListItem>
+      )}
+      <List component="div">
+        <ListItem component={forwardRef(NavListItem)} to="/profile">
+          <ListItemIcon>
+            <PersonIcon />
+          </ListItemIcon>
+          <ListItemText primary="Profile" />
         </ListItem>
       </List>
     </div>

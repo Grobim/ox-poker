@@ -47,6 +47,7 @@ function HandleAnonymousSession() {
                   avatarUrl: data.photoURL,
                   displayName: data.displayName,
                   email: data.email,
+                  showAvatar: false,
                 },
                 { merge: true, useSet: true }
               )

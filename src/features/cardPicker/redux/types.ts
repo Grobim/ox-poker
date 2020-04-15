@@ -8,5 +8,23 @@ enum SpecialCard {
   PAUSE = "PAUSE",
 }
 
-export { SpecialCard };
-export type { CardPickerState };
+interface Room {
+  owner: string;
+  state: RoomState;
+}
+
+interface RoomMember {
+  displayName: string;
+  avatarUrl?: string;
+  isReady: boolean;
+  selectedCard?: number | SpecialCard;
+}
+
+enum RoomState {
+  LOBBY = "LOBBY",
+  PICKING = "PICKING",
+  REVEALING = "REVEALING",
+}
+
+export type { CardPickerState, Room, RoomMember };
+export { SpecialCard, RoomState };
