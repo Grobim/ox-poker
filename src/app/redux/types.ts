@@ -9,7 +9,6 @@ import type {
 } from "../../features/cardPicker/redux/types";
 import type { CounterState } from "../../features/counter/redux/slice";
 import type { UserSettings } from "../../features/profile";
-import type { UsersState } from "../../features/users/redux/types";
 
 interface AppState {
   lastConnectedUId?: string;
@@ -39,7 +38,6 @@ interface RootState<Schema = FirestoreSchema> {
   app: AppState;
   cardPicker: CardPickerState;
   counter: CounterState;
-  users: UsersState;
   firebase: FirebaseReducer.Reducer<UserProfile>;
   firestore: FirestoreState<Schema>;
 }

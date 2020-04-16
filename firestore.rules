@@ -2,14 +2,14 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     match /users/{userId} {
-      allow read, write: if (request.auth.uid == userId && request.auth.token.firebase.sign_in_provider != "anonymous")
-        || isAdmin();
+      allow read: if (request.auth.uid == userId && !isAnonymous()) || isAdmin();
+      allow write: if request.auth.uid == userId && !isAnonymous();
     }
 
     match /settings {
       match /{userId} {
         allow read, write: if request.auth.uid == userId
-          && request.auth.token.firebase.sign_in_provider != "anonymous";
+          && !isAnonymous();
       }
 
       match /undefined {
@@ -51,6 +51,10 @@ service cloud.firestore {
 
     function isAdmin() {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "Admin";
+    }
+
+    function isAnonymous() {
+      return request.auth.token.firebase.sign_in_provider == "anonymous";
     }
   }
 

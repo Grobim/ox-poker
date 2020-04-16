@@ -1,5 +1,11 @@
-import React, { useState, ChangeEvent, FormEvent } from "react";
-import { useParams, Redirect } from "react-router-dom";
+import React, {
+  ChangeEvent,
+  FormEvent,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
+import { Redirect, useParams } from "react-router-dom";
 import firebase from "firebase/app";
 
 import Button from "@material-ui/core/Button";
@@ -23,26 +29,16 @@ interface RoomLoginProps {
 function RoomLogin({ onSuccess }: RoomLoginProps) {
   const { roomId } = useParams<RoomRouteParams>();
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [requestError, setError] = useState<{
     code: string;
     message: string;
   } | void>();
   const [password, setPassword] = useState("");
 
-  function handlePasswordChange(event: ChangeEvent<HTMLInputElement>) {
-    setPassword(event.target.value);
-  }
-
-  function handlePasswordSubmit(event: FormEvent) {
-    event.preventDefault();
-
-    submitPassword();
-  }
-
-  function submitPassword() {
-    if (password) {
-      setIsLoading(true);
+  const submitPassword = useCallback(
+    async function submitPassword() {
       setError();
 
       const loginToRoom = firebase
@@ -50,15 +46,49 @@ function RoomLogin({ onSuccess }: RoomLoginProps) {
         .functions("europe-west1")
         .httpsCallable("loginToRoom");
 
-      loginToRoom({ roomId, passwordHash: sha256.sdigest(password) })
+      try {
+        await loginToRoom({
+          roomId,
+          passwordHash: password && sha256.sdigest(password),
+        });
+      } catch (error) {
+        const { code, message } = error;
+        setError({ code, message });
+
+        throw error;
+      }
+    },
+    [password, roomId]
+  );
+
+  useEffect(() => {
+    setIsRegistering(true);
+    submitPassword()
+      .then(() => {
+        setIsRegistering(false);
+        onSuccess();
+      })
+      .catch(() => {
+        setIsRegistering(false);
+      });
+  }, []); /* eslint-disable-line react-hooks/exhaustive-deps */
+
+  function handlePasswordChange(event: ChangeEvent<HTMLInputElement>) {
+    setPassword(event.target.value);
+  }
+
+  async function handlePasswordSubmit(event: FormEvent) {
+    event.preventDefault();
+
+    if (password && !isSubmitting) {
+      setIsSubmitting(true);
+      return submitPassword()
         .then(() => {
-          setIsLoading(false);
-          setError();
+          setIsSubmitting(false);
           onSuccess();
         })
-        .catch((reqErr) => {
-          setIsLoading(false);
-          setError(reqErr);
+        .catch(() => {
+          setIsSubmitting(false);
         });
     }
   }
@@ -69,17 +99,16 @@ function RoomLogin({ onSuccess }: RoomLoginProps) {
 
   return (
     <Grid container direction="column" spacing={2}>
-      {isLoading ? (
+      {isRegistering ? (
         <>
           <Grid item>
-            <Typography gutterBottom>Logging into the room ...</Typography>
+            <Typography gutterBottom>Registering to the room ...</Typography>
           </Grid>
           <Grid item>
             <LinearProgress color="primary" />
           </Grid>
         </>
-      ) : null}
-      {requestError && (
+      ) : (
         <>
           <Grid item>
             <form noValidate autoComplete="off" onSubmit={handlePasswordSubmit}>
@@ -93,11 +122,15 @@ function RoomLogin({ onSuccess }: RoomLoginProps) {
             </form>
           </Grid>
           <Grid item>
-            <Button variant="contained" onClick={submitPassword}>
+            <Button
+              variant="contained"
+              disabled={isSubmitting}
+              onClick={handlePasswordSubmit}
+            >
               Login
             </Button>
           </Grid>
-          <pre>{JSON.stringify(requestError, null, 2)}</pre>
+          {requestError && <pre>{JSON.stringify(requestError, null, 2)}</pre>}
         </>
       )}
     </Grid>

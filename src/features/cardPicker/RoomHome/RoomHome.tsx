@@ -22,7 +22,7 @@ function RoomHome() {
   }
 
   return (
-    <Grid container direction="column" spacing={5}>
+    <Grid container direction="column" spacing={3}>
       <Grid item>
         <Button
           component={Link}
@@ -36,7 +36,7 @@ function RoomHome() {
       <Grid
         item
         container
-        spacing={2}
+        spacing={1}
         direction="column"
         component="form"
         noValidate

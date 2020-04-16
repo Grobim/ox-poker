@@ -12,8 +12,8 @@ const loginToRoom = functions
       throw new functions.https.HttpsError("unauthenticated", "Requires authentication");
     }
 
-    if (!passwordHash || !roomId) {
-      throw new functions.https.HttpsError("invalid-argument", "roomId and passwordHash are required");
+    if (!roomId) {
+      throw new functions.https.HttpsError("invalid-argument", "roomId is required");
     }
 
     const roomSnap = await functions.app.admin
@@ -26,13 +26,16 @@ const loginToRoom = functions
       throw new functions.https.HttpsError("not-found", "Room doesn't exists");
     }
 
-    if (passwordHash === room.passwordHash) {
+    if (!room.passwordHash || passwordHash === room.passwordHash) {
       return admin.firestore()
         .doc(`/rooms/${roomId}/registeredMembers/${auth.uid}`)
         .set({ role: "MEMBER" });
     }
 
-    throw new functions.https.HttpsError("permission-denied", "Password is incorrect");
+    throw new functions.https.HttpsError(
+      "permission-denied",
+      passwordHash ? "Password is incorrect" : "Password required"
+    );
   });
 
 export default loginToRoom;
