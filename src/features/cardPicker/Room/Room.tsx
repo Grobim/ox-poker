@@ -12,6 +12,7 @@ import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 
+import DelayedFade from "../../../app/DelayedFade";
 import { useUserId } from "../../auth";
 
 import {
@@ -27,7 +28,7 @@ import { RoomState } from "../redux/types";
 
 import CardSelector from "../CardSelector";
 import RoomLobby from "../RoomLobby";
-import RoomResults from "../RoomResults";
+import RoomMemberList from "../RoomMemberList";
 
 import useStyles from "./Room.styles";
 
@@ -105,7 +106,7 @@ function Room() {
 
   return (
     <>
-      {!userMember.isReady || room.state === RoomState.LOBBY ? (
+      <DelayedFade in={!userMember.isReady || room.state === RoomState.LOBBY}>
         <RoomLobby
           room={room}
           roomRef={roomRef}
@@ -114,21 +115,28 @@ function Room() {
           userMember={userMember}
           userMemberRef={userMemberRef}
         />
-      ) : userMember.isReady &&
-        room.state === RoomState.PICKING &&
-        typeof userMember.selectedCard === "undefined" ? (
+      </DelayedFade>
+      <DelayedFade
+        in={
+          userMember.isReady &&
+          room.state === RoomState.PICKING &&
+          typeof userMember.selectedCard === "undefined"
+        }
+      >
         <CardSelector />
-      ) : (
-        userMember.isReady &&
-        (room.state === RoomState.REVEALING ||
-          typeof userMember.selectedCard !== "undefined") && (
-          <RoomResults
-            userId={userId}
-            members={readyMembers}
-            hideResults={room.state === RoomState.PICKING}
-          />
-        )
-      )}
+      </DelayedFade>
+      <DelayedFade
+        in={
+          userMember.isReady &&
+          (room.state === RoomState.REVEALING ||
+            typeof userMember.selectedCard !== "undefined")
+        }
+      >
+        <RoomMemberList
+          members={readyMembers}
+          hideValue={room.state === RoomState.PICKING}
+        />
+      </DelayedFade>
       <Zoom
         in={!userMember.isReady || room.state !== RoomState.PICKING}
         timeout={transitionDuration}

@@ -1,42 +1,73 @@
 import React from "react";
+import clsx from "clsx";
 import map from "lodash/map";
 
 import Avatar from "@material-ui/core/Avatar";
-import List, { ListProps } from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import ListItemText from "@material-ui/core/ListItemText";
+import Grid from "@material-ui/core/Grid";
+import Typography from "@material-ui/core/Typography";
 
 import { useUserId } from "../../auth";
 
-import type { RoomMember } from "../redux/types";
+import { RoomMember } from "../redux/types";
 
-interface RoomMemberListProps extends ListProps {
+import RoomMemberValue, { RoomMemberValueProps } from "./RoomMemberValue";
+
+import useStyles from "./RoomMemberList.styles";
+
+interface RoomMemberListProps {
   members: Record<string, RoomMember>;
-  getSecondaryAction?: (member: RoomMember, memberId: string) => unknown;
+  hideValue?: boolean;
+  ValueComponent?: (props: RoomMemberValueProps) => JSX.Element | null;
+  subheader?: string;
 }
 
 function RoomMemberList({
   members,
-  getSecondaryAction,
-  ...props
+  subheader,
+  hideValue = false,
+  ValueComponent = RoomMemberValue,
 }: RoomMemberListProps) {
+  const classes = useStyles();
+
   const userId = useUserId();
 
   return (
-    <List {...props}>
+    <Grid className={classes.root} container direction="column">
+      {subheader && (
+        <Grid item className={classes.subheader}>
+          {subheader}
+        </Grid>
+      )}
       {map(members, (member, memberId: string) => (
-        <ListItem key={memberId} selected={userId === memberId}>
-          <ListItemAvatar>
-            <Avatar alt={member.displayName} src={member.avatarUrl} />
-          </ListItemAvatar>
-          <ListItemText primary={member.displayName || "Anonymous"} />
-          {getSecondaryAction && getSecondaryAction(member, memberId)}
-        </ListItem>
+        <Grid
+          key={memberId}
+          item
+          xs={12}
+          container
+          alignItems="center"
+          className={clsx(classes.item, {
+            [classes.selected]: userId === memberId,
+          })}
+        >
+          <Grid item>
+            <Avatar
+              className={classes.avatar}
+              alt={member.displayName}
+              src={member.avatarUrl}
+            />
+          </Grid>
+          <Grid item className={classes.name}>
+            <Typography>{member.displayName || "Anonymous"}</Typography>
+          </Grid>
+          <ValueComponent
+            member={member}
+            hideValue={hideValue && memberId !== userId}
+          />
+        </Grid>
       ))}
-    </List>
+    </Grid>
   );
 }
 
-export type { RoomMemberListProps };
+export type { RoomMemberListProps, RoomMemberValueProps };
 export default RoomMemberList;

@@ -5,8 +5,6 @@ import firebase from "firebase/app";
 import Card from "@material-ui/core/Card";
 import Divider from "@material-ui/core/Divider";
 import Grid from "@material-ui/core/Grid";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
-import ListSubheader from "@material-ui/core/ListSubheader";
 
 import DoneIcon from "@material-ui/icons/Done";
 
@@ -14,11 +12,25 @@ import { useUserId } from "../../auth";
 
 import type { Room, RoomMember } from "../redux/types";
 
-import RoomMemberList from "../RoomMemberList";
+import RoomMemberList, { RoomMemberValueProps } from "../RoomMemberList";
 import RoomSettings from "../RoomSettings";
 import VisibilitySettings from "../VisibilitySettings";
 
 import useStyles from "./RoomLobby.styles";
+
+function RoomCheck({ member: { isReady } }: RoomMemberValueProps) {
+  const classes = useStyles();
+
+  if (isReady) {
+    return (
+      <Grid item>
+        <DoneIcon className={classes.readyIcon} />
+      </Grid>
+    );
+  }
+
+  return null;
+}
 
 interface RoomLobbyProps {
   room: Room;
@@ -42,8 +54,6 @@ function RoomLobby({
   readyCount,
 }: RoomLobbyProps) {
   const { newRoom = false } = useLocation<RoomLobbyRouteState>().state || {};
-
-  const classes = useStyles();
 
   const userId = useUserId();
 
@@ -103,19 +113,8 @@ function RoomLobby({
       <Grid item xs={12}>
         <RoomMemberList
           members={members}
-          aria-labelledby="member-list-subheader"
-          subheader={
-            <ListSubheader id="member-list-subheader">
-              Members ({readyCount}/{memberCount})
-            </ListSubheader>
-          }
-          getSecondaryAction={(member) =>
-            member.isReady && (
-              <ListItemSecondaryAction>
-                <DoneIcon className={classes.readyIcon} />
-              </ListItemSecondaryAction>
-            )
-          }
+          subheader={`Members (${readyCount}/${memberCount})`}
+          ValueComponent={RoomCheck}
         />
       </Grid>
     </Grid>
