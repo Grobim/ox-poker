@@ -74,11 +74,11 @@ function Drawer({ mobileOpen, onMenuClose }: DrawerProps) {
       </List>
       <Divider />
       {isAdmin && (
-        <ListItem component={forwardRef(NavListItem)} to="/users">
+        <ListItem component={forwardRef(NavListItem)} to="/admin">
           <ListItemIcon>
             <SupervisorAccountIcon />
           </ListItemIcon>
-          <ListItemText primary="Users" />
+          <ListItemText primary="Admin" />
         </ListItem>
       )}
       <List component="div">

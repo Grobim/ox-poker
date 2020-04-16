@@ -11,6 +11,9 @@ enum SpecialCard {
 interface Room {
   owner: string;
   state: RoomState;
+  displayName?: string;
+  passwordHash?: string;
+  cards: (number | SpecialCard)[];
 }
 
 interface RoomMember {

@@ -5,7 +5,7 @@ const useStyles = makeStyles({
     display: "inline-block",
   },
   fillParent: {
-    height: "100%",
+    minHeight: "100%",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",

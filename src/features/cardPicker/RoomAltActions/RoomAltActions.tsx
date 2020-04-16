@@ -3,22 +3,22 @@ import { isEmpty, isLoaded, useFirestore } from "react-redux-firebase";
 import { useParams } from "react-router-dom";
 import firebaseApp from "firebase/app";
 
-import Fade from "@material-ui/core/Fade";
 import IconButton from "@material-ui/core/IconButton";
 
 import EditIcon from "@material-ui/icons/Edit";
 
+import DelayedFade from "../../../app/DelayedFade";
 import { useUserId } from "../../auth";
 
 import { useRoom, useUserRoomMember } from "../hooks";
 import { RoomState } from "../redux/types";
 
-import type { RoomHomeRouteParams } from "../Room";
+import type { RoomRouteParams } from "../Room";
 
 function RoomAltActions() {
   const firestore = useFirestore();
 
-  const { roomId } = useParams<RoomHomeRouteParams>();
+  const { roomId } = useParams<RoomRouteParams>();
   const userId = useUserId();
 
   const room = useRoom(roomId);
@@ -40,7 +40,7 @@ function RoomAltActions() {
   }
 
   return (
-    <Fade
+    <DelayedFade
       in={
         room.state === RoomState.PICKING &&
         typeof userMember.selectedCard !== "undefined"
@@ -49,7 +49,7 @@ function RoomAltActions() {
       <IconButton onClick={handleEditClick}>
         <EditIcon />
       </IconButton>
-    </Fade>
+    </DelayedFade>
   );
 }
 

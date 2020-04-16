@@ -1,9 +1,11 @@
 import { makeStyles } from "@material-ui/core";
 
 const useStyles = makeStyles({
-  visibleValue: {
-    right: 20,
-    fontWeight: "bold",
+  closeButton: {
+    marginLeft: "auto",
+  },
+  cardList: {
+    height: 56,
   },
 });
 

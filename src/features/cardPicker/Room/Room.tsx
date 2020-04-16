@@ -12,6 +12,7 @@ import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 
+import DelayedFade from "../../../app/DelayedFade";
 import { useUserId } from "../../auth";
 
 import {
@@ -22,16 +23,16 @@ import {
   useSelectedCard,
   useUserRoomMember,
 } from "../hooks";
-import { setSelectedCard } from "../redux";
+import { setCards, setSelectedCard } from "../redux";
 import { RoomState } from "../redux/types";
 
 import CardSelector from "../CardSelector";
 import RoomLobby from "../RoomLobby";
-import RoomResults from "../RoomResults";
+import RoomMemberList from "../RoomMemberList";
 
 import useStyles from "./Room.styles";
 
-interface RoomHomeRouteParams {
+interface RoomRouteParams {
   roomId: string;
 }
 
@@ -39,7 +40,7 @@ function Room() {
   const dispatch = useDispatch();
   const firestore = useFirestore();
 
-  const { roomId } = useParams<RoomHomeRouteParams>();
+  const { roomId } = useParams<RoomRouteParams>();
   useRoomConnect(roomId);
   const room = useRoom(roomId);
   const members = useActiveRoomMembers();
@@ -66,6 +67,12 @@ function Room() {
     () => firestore.doc(`rooms/${roomId}/members/${userId}`),
     [firestore, roomId, userId]
   );
+  const roomCards = useMemo(
+    () =>
+      room &&
+      (room.cards.filter((card) => typeof card === "number") as number[]),
+    [room]
+  );
 
   const roomState = room && room.state;
 
@@ -78,7 +85,13 @@ function Room() {
     }
   }, [dispatch, userMemberRef, roomState]);
 
-  if (!roomId || (isLoaded(room) && isEmpty(room))) {
+  useEffect(() => {
+    if (roomCards) {
+      dispatch(setCards(roomCards));
+    }
+  }, [dispatch, roomCards]);
+
+  if (isLoaded(room) && isEmpty(room)) {
     return <Redirect to="/online" />;
   }
 
@@ -105,28 +118,37 @@ function Room() {
 
   return (
     <>
-      {!userMember.isReady || room.state === RoomState.LOBBY ? (
+      <DelayedFade in={!userMember.isReady || room.state === RoomState.LOBBY}>
         <RoomLobby
+          room={room}
+          roomRef={roomRef}
           members={members}
-          readyCount={readyMembers.length}
+          readyCount={Object.keys(readyMembers).length}
           userMember={userMember}
           userMemberRef={userMemberRef}
         />
-      ) : userMember.isReady &&
-        room.state === RoomState.PICKING &&
-        typeof userMember.selectedCard === "undefined" ? (
+      </DelayedFade>
+      <DelayedFade
+        in={
+          userMember.isReady &&
+          room.state === RoomState.PICKING &&
+          typeof userMember.selectedCard === "undefined"
+        }
+      >
         <CardSelector />
-      ) : (
-        userMember.isReady &&
-        (room.state === RoomState.REVEALING ||
-          typeof userMember.selectedCard !== "undefined") && (
-          <RoomResults
-            userId={userId}
-            members={members}
-            hideResults={room.state === RoomState.PICKING}
-          />
-        )
-      )}
+      </DelayedFade>
+      <DelayedFade
+        in={
+          userMember.isReady &&
+          (room.state === RoomState.REVEALING ||
+            typeof userMember.selectedCard !== "undefined")
+        }
+      >
+        <RoomMemberList
+          members={readyMembers}
+          hideValue={room.state === RoomState.PICKING}
+        />
+      </DelayedFade>
       <Zoom
         in={!userMember.isReady || room.state !== RoomState.PICKING}
         timeout={transitionDuration}
@@ -196,5 +218,5 @@ function Room() {
   );
 }
 
-export type { RoomHomeRouteParams };
+export type { RoomRouteParams };
 export default Room;

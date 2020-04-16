@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { useDispatch } from "react-redux";
 import { isEmpty, isLoaded, useFirebase } from "react-redux-firebase";
+import firebaseApp from "firebase/app";
 
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
@@ -21,7 +22,7 @@ import Zoom from "@material-ui/core/Zoom";
 
 import EditIcon from "@material-ui/icons/Edit";
 
-import { useProfile, useAuth, UserProfile } from "../../auth";
+import { useAuth, useProfile } from "../../auth";
 
 import { triggerUserSettingsUpdate, useSyncedUserSettings } from "..";
 
@@ -35,7 +36,7 @@ function Profile() {
   const profile = useProfile();
   const { darkMode = false } = useSyncedUserSettings();
 
-  const [avatarUrl, setAvatarUrl] = useState<string>(profile.avatarUrl);
+  const [avatarUrl, setAvatarUrl] = useState<string | void>(profile.avatarUrl);
   const [avatarFile, setAvatarFile] = useState<File | void>();
   const [displayName, setDisplayName] = useState(profile.displayName || "");
   const [showAvatar, setShowAvatar] = useState<boolean>(
@@ -63,6 +64,15 @@ function Profile() {
     }
   }
 
+  function handleRemoveClick() {
+    setAvatarUrl();
+    setAvatarFile();
+    setShowAvatar(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  }
+
   function handleProfileSubmit(event: FormEvent) {
     event.preventDefault();
 
@@ -82,7 +92,7 @@ function Profile() {
   }
 
   async function updateProfile() {
-    const profileUpdates: Partial<UserProfile> = {};
+    const profileUpdates: firebase.firestore.UpdateData = {};
 
     if (displayName && displayName !== profile.displayName) {
       profileUpdates.displayName = displayName;
@@ -92,8 +102,9 @@ function Profile() {
       profileUpdates.showAvatar = showAvatar;
     }
 
-    if (Object.keys(profileUpdates).length) {
-      firebase.updateProfile(profileUpdates);
+    if (!avatarUrl && profile.avatarUrl !== avatarUrl) {
+      profileUpdates.avatarUrl = firebaseApp.firestore.FieldValue.delete();
+      profileUpdates.avatarBucketPath = firebaseApp.firestore.FieldValue.delete();
     }
 
     if (avatarFile) {
@@ -109,7 +120,8 @@ function Profile() {
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
-      firebase.updateProfile({ avatarUrl: downloadUrl });
+      profileUpdates.avatarUrl = downloadUrl;
+      profileUpdates.avatarBucketPath = fileRef.fullPath;
 
       const filesRes = await firebase
         .storage()
@@ -121,6 +133,13 @@ function Profile() {
           .filter((file) => file.fullPath !== fileRef.fullPath)
           .map((fileRef) => fileRef.delete())
       );
+    } else if (avatarUrl !== profile.avatarUrl && profile.avatarBucketPath) {
+      firebase.storage().ref(profile.avatarBucketPath).delete();
+      profileUpdates.showAvatar = false;
+    }
+
+    if (Object.keys(profileUpdates).length) {
+      firebase.updateProfile(profileUpdates);
     }
   }
 
@@ -145,25 +164,34 @@ function Profile() {
                 <Grid container direction="column" spacing={1}>
                   <Grid item>
                     <Avatar
-                      src={avatarUrl}
+                      src={avatarUrl || undefined}
                       className={classes.avatar}
                       alt="Avatar"
                     />
                   </Grid>
-                  <Grid container item justify="center">
-                    <Button
-                      variant="contained"
-                      className={classes.avatarButton}
-                    >
-                      Upload avatar
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        className={classes.avatarInput}
-                        onChange={handleAvatarChange}
-                      />
-                    </Button>
+                  <Grid container item justify="center" spacing={1}>
+                    {avatarUrl && (
+                      <Grid item>
+                        <Button color="secondary" onClick={handleRemoveClick}>
+                          Remove
+                        </Button>
+                      </Grid>
+                    )}
+                    <Grid item>
+                      <Button
+                        variant="contained"
+                        className={classes.avatarButton}
+                      >
+                        Upload avatar
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept="image/*"
+                          className={classes.avatarInput}
+                          onChange={handleAvatarChange}
+                        />
+                      </Button>
+                    </Grid>
                   </Grid>
                   <Grid item>
                     <TextField
@@ -179,6 +207,7 @@ function Profile() {
                         <Switch
                           checked={showAvatar}
                           onChange={handleShowAvatarChange}
+                          disabled={!avatarUrl}
                         />
                       }
                     />
@@ -205,7 +234,8 @@ function Profile() {
           !auth.isAnonymous &&
           ((displayName && displayName !== profile.displayName) ||
             showAvatar !== Boolean(profile.showAvatar) ||
-            Boolean(avatarFile))
+            Boolean(avatarFile) ||
+            avatarUrl !== profile.avatarUrl)
         }
       >
         <Fab onClick={updateProfile} className={classes.fab} color="primary">

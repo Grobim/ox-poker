@@ -8,12 +8,16 @@ import Typography from "@material-ui/core/Typography";
 
 import { useUserId } from "../../auth";
 
+import type { RoomLobbyRouteState } from "../RoomLobby";
+
+import { useCards } from "../hooks";
 import { RoomState } from "../redux/types";
 
 function RoomCreator() {
-  const history = useHistory();
+  const history = useHistory<RoomLobbyRouteState>();
   const firestore = useFirestore();
 
+  const cards = useCards();
   const userId = useUserId();
 
   useEffect(() => {
@@ -22,11 +26,12 @@ function RoomCreator() {
       .add({
         owner: userId,
         state: RoomState.LOBBY,
+        cards,
       })
       .then((newRoomRef) => {
-        history.replace(`/online/${newRoomRef.id}`);
+        history.replace(`/online/${newRoomRef.id}`, { newRoom: true });
       });
-  }, [firestore, history, userId]);
+  }, [firestore, history, userId, cards]);
 
   return (
     <Grid container direction="column" spacing={2}>

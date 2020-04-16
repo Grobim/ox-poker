@@ -19,11 +19,13 @@ const OnlineCardPicker = loadableWithRefreshedStore(() =>
     /* webpackChunkName: "onlineCardPicker" */ "../../features/cardPicker/OnlineCardPicker"
   )
 );
-const UserList = loadableWithRefreshedStore(() =>
-  import(/* webpackChunkName: "userList" */ "../../features/users/UserList")
+const AdminDashboard = loadableWithRefreshedStore(() =>
+  import(
+    /* webpackChunkName: "adminDashboard" */ "../../features/admin/AdminDashboard"
+  )
 );
 const Profile = loadableWithRefreshedStore(() =>
-  import(/* webpackChunkName: "settings" */ "../../features/profile/Profile")
+  import(/* webpackChunkName: "profile" */ "../../features/profile/Profile")
 );
 const Login = loadableWithRefreshedStore(() =>
   import(/* webpackChunkName: "login" */ "../../features/auth/Login")
@@ -41,8 +43,8 @@ function MainRoutes() {
       <Route path="/online">
         <OnlineCardPicker />
       </Route>
-      <PrivateRoute path="/users" role={Role.ADMIN}>
-        <UserList />
+      <PrivateRoute path="/admin" role={Role.ADMIN}>
+        <AdminDashboard />
       </PrivateRoute>
       <Route path="/login">
         <Login />

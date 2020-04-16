@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
   },
   root: {
     display: "flex",
-    height: "100%",
+    minHeight: "100%",
   },
   toolbar: {
     minHeight: 64,
