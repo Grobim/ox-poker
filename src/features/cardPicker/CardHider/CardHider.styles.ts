@@ -2,7 +2,7 @@ import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles({
   hiddenLabelContainer: {
-    height: "100%",
+    minHeight: "100%",
     display: "flex",
   },
   hiddenLabel: {

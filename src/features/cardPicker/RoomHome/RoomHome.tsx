@@ -53,7 +53,10 @@ function RoomHome() {
         <Grid item>
           <Button
             component={Link}
-            to={`${url}/${roomId}`}
+            to={{
+              pathname: `${url}/${roomId}`,
+              state: {},
+            }}
             variant="contained"
             disabled={!roomId}
           >

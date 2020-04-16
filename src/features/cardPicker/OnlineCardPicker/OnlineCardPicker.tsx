@@ -32,7 +32,12 @@ function OnlineCardPicker() {
   const { path } = useRouteMatch();
 
   return (
-    <Grid container direction="column" spacing={1} style={{ height: "100%" }}>
+    <Grid
+      container
+      direction="column"
+      spacing={1}
+      style={{ minHeight: "100%" }}
+    >
       <Grid item container justify="space-between">
         <Grid item>
           <Typography variant="h4" gutterBottom>

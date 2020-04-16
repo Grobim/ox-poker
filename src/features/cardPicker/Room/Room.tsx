@@ -23,7 +23,7 @@ import {
   useSelectedCard,
   useUserRoomMember,
 } from "../hooks";
-import { setSelectedCard } from "../redux";
+import { setCards, setSelectedCard } from "../redux";
 import { RoomState } from "../redux/types";
 
 import CardSelector from "../CardSelector";
@@ -67,6 +67,12 @@ function Room() {
     () => firestore.doc(`rooms/${roomId}/members/${userId}`),
     [firestore, roomId, userId]
   );
+  const roomCards = useMemo(
+    () =>
+      room &&
+      (room.cards.filter((card) => typeof card === "number") as number[]),
+    [room]
+  );
 
   const roomState = room && room.state;
 
@@ -78,6 +84,12 @@ function Room() {
       });
     }
   }, [dispatch, userMemberRef, roomState]);
+
+  useEffect(() => {
+    if (roomCards) {
+      dispatch(setCards(roomCards));
+    }
+  }, [dispatch, roomCards]);
 
   if (isLoaded(room) && isEmpty(room)) {
     return <Redirect to="/online" />;

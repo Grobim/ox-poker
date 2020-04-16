@@ -6,7 +6,7 @@ const useStyles = (fontSize?: string | number) =>
 
     return {
       root: {
-        height: "100%",
+        minHeight: "100%",
       },
       content: {
         display: "flex",
