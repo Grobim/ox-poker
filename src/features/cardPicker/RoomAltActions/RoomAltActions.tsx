@@ -13,12 +13,12 @@ import { useUserId } from "../../auth";
 import { useRoom, useUserRoomMember } from "../hooks";
 import { RoomState } from "../redux/types";
 
-import type { RoomHomeRouteParams } from "../Room";
+import type { RoomRouteParams } from "../Room";
 
 function RoomAltActions() {
   const firestore = useFirestore();
 
-  const { roomId } = useParams<RoomHomeRouteParams>();
+  const { roomId } = useParams<RoomRouteParams>();
   const userId = useUserId();
 
   const room = useRoom(roomId);

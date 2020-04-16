@@ -12,6 +12,7 @@ interface Room {
   owner: string;
   state: RoomState;
   displayName?: string;
+  passwordHash?: string;
 }
 
 interface RoomMember {

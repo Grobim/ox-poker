@@ -18,10 +18,21 @@ const onUserStatusChanged = functions
 
     const memberRef = admin.firestore().doc(path);
 
-    const liveStatusSnapshot = await change.after.ref.once("value");
+    const [
+      liveStatusSnapshot,
+      liveMemberSnapshot,
+    ] = await Promise.all([
+      change.after.ref.once("value"),
+      memberRef.get(),
+    ]);
     const liveStatus = liveStatusSnapshot.val();
+    const liveMember = liveMemberSnapshot.data();
 
-    if (eventStatus.timestamp < liveStatus.timestamp) {
+    if (
+      eventStatus.timestamp < liveStatus.timestamp ||
+      !liveMember ||
+      eventStatus.timestamp < liveMember.timestamp
+    ) {
       return null;
     }
 

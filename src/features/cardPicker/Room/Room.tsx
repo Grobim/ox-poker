@@ -31,7 +31,7 @@ import RoomResults from "../RoomResults";
 
 import useStyles from "./Room.styles";
 
-interface RoomHomeRouteParams {
+interface RoomRouteParams {
   roomId: string;
 }
 
@@ -39,7 +39,7 @@ function Room() {
   const dispatch = useDispatch();
   const firestore = useFirestore();
 
-  const { roomId } = useParams<RoomHomeRouteParams>();
+  const { roomId } = useParams<RoomRouteParams>();
   useRoomConnect(roomId);
   const room = useRoom(roomId);
   const members = useActiveRoomMembers();
@@ -198,5 +198,5 @@ function Room() {
   );
 }
 
-export type { RoomHomeRouteParams };
+export type { RoomRouteParams };
 export default Room;

@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import {
-  useFirestore,
-  isLoaded,
   isEmpty,
-  useFirestoreConnect,
+  isLoaded,
   useFirebase,
+  useFirestore,
+  useFirestoreConnect,
 } from "react-redux-firebase";
 import firebaseLib from "firebase/app";
 
@@ -73,6 +73,7 @@ const useRoomPresence = (roomId: string) => {
                     ? profile.avatarUrl || null
                     : null,
                 isReady: false,
+                timestamp: firebaseLib.database.ServerValue.TIMESTAMP,
               },
               { merge: true }
             );

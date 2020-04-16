@@ -1,5 +1,6 @@
 import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { isEmpty, isLoaded } from "react-redux-firebase";
+import firebase from "firebase/app";
 
 import Button from "@material-ui/core/Button";
 import CardActionArea from "@material-ui/core/CardActionArea";
@@ -12,14 +13,15 @@ import Grid from "@material-ui/core/Grid";
 import Switch from "@material-ui/core/Switch";
 import TextField from "@material-ui/core/TextField";
 
+import { useAuth, useProfile } from "../../auth";
+
 import { RoomMember } from "../redux/types";
-import { useProfile, useAuth } from "../../auth";
 
 import useStyles from "./VisibilitySettings.styles";
 
 interface VisibilitySettingsProps {
   member: RoomMember;
-  onSave: (roomMember: Partial<RoomMember>) => void;
+  onSave: (roomMember: firebase.firestore.UpdateData) => void;
   onReadyClick?: (ready: boolean) => void;
   expanded: boolean;
 }
@@ -98,7 +100,7 @@ function VisibilitySettings({
       ) : (
         header
       )}
-      <Collapse in={isExpanded}>
+      <Collapse in={isExpanded} timeout="auto">
         <CardContent>
           <form noValidate autoComplete="off" onSubmit={handleFormSubmit}>
             <Grid container spacing={1}>

@@ -1,4 +1,14 @@
-import * as rooms from "./rooms";
+import {
+  loginToRoom,
+  deleteExpiredRooms,
+  onUserStatusChanged,
+  updateLastRoomActivity,
+} from "./rooms";
 
 
-export { rooms };
+export {
+  loginToRoom,
+  deleteExpiredRooms,
+  onUserStatusChanged,
+  updateLastRoomActivity,
+};
