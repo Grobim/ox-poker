@@ -9,7 +9,7 @@ const loginToRoom = functions
     const { auth } = context;
 
     if (!auth) {
-      throw new functions.https.HttpsError("unauthenticated", "Requires authentication")
+      throw new functions.https.HttpsError("unauthenticated", "Requires authentication");
     }
 
     if (!passwordHash || !roomId) {
