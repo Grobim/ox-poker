@@ -1,5 +1,5 @@
-import { Dispatch } from "@reduxjs/toolkit";
-import { getFirebase, FirebaseReducer } from "react-redux-firebase";
+import type { Dispatch } from "@reduxjs/toolkit";
+import type { getFirebase, FirebaseReducer } from "react-redux-firebase";
 
 import type { UserProfile } from "../../features/auth";
 import type {

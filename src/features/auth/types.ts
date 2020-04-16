@@ -9,6 +9,7 @@ interface UserProfile {
   showAvatar: boolean;
   providerData?: Record<string, any>[];
   role?: string;
+  avatarBucketPath?: string;
 }
 
 export type { UserProfile };
