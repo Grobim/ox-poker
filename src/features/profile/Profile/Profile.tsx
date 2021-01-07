@@ -92,7 +92,7 @@ function Profile() {
   }
 
   async function updateProfile() {
-    const profileUpdates: firebase.firestore.UpdateData = {};
+    const profileUpdates: firebase.default.firestore.UpdateData = {};
 
     if (displayName && displayName !== profile.displayName) {
       profileUpdates.displayName = displayName;

@@ -1,9 +1,12 @@
+import firebase from "firebase";
+
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useFirebase } from "react-redux-firebase";
-import { User } from "firebase";
 
 import slice from "../redux/slice";
+
+type User = firebase.User;
 
 const {
   actions: { updateLastConnectedUid },

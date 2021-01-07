@@ -71,7 +71,7 @@ function RoomLogin({ onSuccess }: RoomLoginProps) {
       .catch(() => {
         setIsRegistering(false);
       });
-  }, []); /* eslint-disable-line react-hooks/exhaustive-deps */
+  }, [submitPassword, onSuccess]);
 
   function handlePasswordChange(event: ChangeEvent<HTMLInputElement>) {
     setPassword(event.target.value);

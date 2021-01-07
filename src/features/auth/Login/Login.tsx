@@ -6,10 +6,6 @@ import firebaseLib from "firebase/app";
 
 import { useAuth } from "../hooks";
 
-interface LoginLocationState {
-  from: { pathname: string };
-}
-
 function Login() {
   const firebase = useFirebase();
 
