@@ -1,13 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { isEmpty, isLoaded, useFirestore } from "react-redux-firebase";
-import { Redirect, useParams } from "react-router-dom";
-
 import Grid from "@material-ui/core/Grid";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Typography from "@material-ui/core/Typography";
-
+import React, { useEffect, useState } from "react";
+import { isEmpty, isLoaded, useFirestore } from "react-redux-firebase";
+import { Redirect, useParams } from "react-router-dom";
 import { useAuth } from "../../auth";
-
 import Room, { RoomRouteParams } from "../Room";
 import RoomLogin from "../RoomLogin";
 
@@ -22,9 +19,10 @@ function RoomDispatch() {
 
   useEffect(() => {
     if (isLoading && isLoaded(auth) && !isEmpty(auth)) {
-      firestore
-        .doc(`/rooms/${roomId}`)
-        .get()
+      Promise.all([
+        firestore.doc(`/rooms/${roomId}`).get(),
+        firestore.collection(`/rooms/${roomId}/members`).get(),
+      ])
         .then(() => {
           setIsLoading(false);
           setHasAccess(true);

@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
     direction: "ltr",
   },
   fab: {
-    position: "absolute",
+    position: "fixed",
     right: theme.spacing(2),
     bottom: theme.spacing(2),
   },
