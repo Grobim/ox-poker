@@ -11,7 +11,7 @@ import PeopleIcon from "@material-ui/icons/People";
 import PersonIcon from "@material-ui/icons/Person";
 import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 import clsx from "clsx";
-import React, { forwardRef, MouseEventHandler, ReactChild } from "react";
+import React, { forwardRef, MouseEventHandler, ReactChild, Ref } from "react";
 import { NavLink } from "react-router-dom";
 
 import { useIsRole, Role } from "../../features/auth";
@@ -34,7 +34,10 @@ function Drawer({ mobileOpen, onMenuClose }: DrawerProps) {
 
   const isAdmin = useIsRole(Role.ADMIN);
 
-  function NavListItem({ className, ...props }: NavListItemProps) {
+  function NavListItem(
+    { className, ...props }: NavListItemProps,
+    ref: Ref<typeof Button>
+  ) {
     return (
       <Button
         className={clsx(className, classes.navItem)}
