@@ -9,9 +9,12 @@ import storeManager from "../../../app/redux/StoreManager";
 import { name, reducer } from "../redux/slice";
 
 import RoomAltActions from "../RoomAltActions";
+import RoomCopyAction from "../RoomCopyAction";
 import RoomCreator from "../RoomCreator";
 import RoomDispatch from "../RoomDispatch";
 import RoomHome from "../RoomHome";
+
+import useStyles from "./OnlineCardPicker.styles";
 
 storeManager.registerReducers({
   [name]: reducer,
@@ -31,6 +34,8 @@ if (process.env.NODE_ENV !== "production") {
 function OnlineCardPicker() {
   const { path } = useRouteMatch();
 
+  const classes = useStyles();
+
   return (
     <Grid
       container
@@ -39,10 +44,16 @@ function OnlineCardPicker() {
       style={{ minHeight: "100%" }}
     >
       <Grid item container justify="space-between">
-        <Grid item>
-          <Typography variant="h4" gutterBottom>
+        <Grid item className={classes.titleContainer}>
+          <Typography variant="h4" gutterBottom className={classes.title}>
             OnlineCardPicker
           </Typography>
+          <Switch>
+            <Route path={`${path}/new-room`}></Route>
+            <Route path={`${path}/:roomId`}>
+              <RoomCopyAction />
+            </Route>
+          </Switch>
         </Grid>
         <Grid item>
           <Switch>
