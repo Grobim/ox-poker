@@ -52,8 +52,7 @@ function RoomLogin({ onSuccess }: RoomLoginProps) {
           passwordHash: password && sha256.sdigest(password),
         });
       } catch (error) {
-        const { code, message } = error;
-        setError({ code, message });
+        setError(error);
 
         throw error;
       }
@@ -62,16 +61,18 @@ function RoomLogin({ onSuccess }: RoomLoginProps) {
   );
 
   useEffect(() => {
-    setIsRegistering(true);
-    submitPassword()
-      .then(() => {
-        setIsRegistering(false);
-        onSuccess();
-      })
-      .catch(() => {
-        setIsRegistering(false);
-      });
-  }, [submitPassword, onSuccess]);
+    if (!requestError) {
+      setIsRegistering(true);
+      submitPassword()
+        .then(() => {
+          setIsRegistering(false);
+          onSuccess();
+        })
+        .catch(() => {
+          setIsRegistering(false);
+        });
+    }
+  }, [submitPassword, onSuccess, requestError]);
 
   function handlePasswordChange(event: ChangeEvent<HTMLInputElement>) {
     setPassword(event.target.value);
@@ -81,6 +82,7 @@ function RoomLogin({ onSuccess }: RoomLoginProps) {
     event.preventDefault();
 
     if (password && !isSubmitting) {
+      setError();
       setIsSubmitting(true);
       return submitPassword()
         .then(() => {
@@ -93,7 +95,7 @@ function RoomLogin({ onSuccess }: RoomLoginProps) {
     }
   }
 
-  if (!roomId) {
+  if (!roomId || (requestError && requestError.code === "not-found")) {
     return <Redirect to="/online" />;
   }
 
@@ -118,6 +120,7 @@ function RoomLogin({ onSuccess }: RoomLoginProps) {
                 type="password"
                 label="Password"
                 fullWidth
+                autoFocus
               />
             </form>
           </Grid>
