@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import Fade, { FadeProps } from "@material-ui/core/Fade";
 import { useTheme } from "@material-ui/core/styles";

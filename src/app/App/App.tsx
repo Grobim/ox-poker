@@ -1,5 +1,5 @@
 import "typeface-roboto";
-import React, { useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { SnackbarProvider } from "notistack";
 
 import CssBaseline from "@material-ui/core/CssBaseline";

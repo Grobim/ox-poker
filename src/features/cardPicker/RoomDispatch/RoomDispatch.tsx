@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { isEmpty, isLoaded, useFirestore } from "react-redux-firebase";
 import { Redirect, useParams } from "react-router-dom";
 import { useSnackbar } from "notistack";

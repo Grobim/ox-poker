@@ -1,4 +1,4 @@
-import React, { ReactChild, useState } from "react";
+import { ReactChild, useState } from "react";
 
 import Drawer from "./Drawer";
 import Toolbar from "./Toolbar";

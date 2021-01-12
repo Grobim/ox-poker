@@ -1,4 +1,4 @@
-import React, { ElementType } from "react";
+import { ElementType } from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { ReactReduxFirebaseProvider } from "react-redux-firebase";
