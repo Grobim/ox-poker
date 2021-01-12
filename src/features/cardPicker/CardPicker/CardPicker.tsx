@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import clsx from "clsx";
 
@@ -19,6 +19,7 @@ import { name, reducer } from "../redux/slice";
 import { SpecialCard } from "../redux/types";
 
 import DelayedFade from "../../../app/DelayedFade";
+import slice from "../../../app/redux/slice";
 
 import CardEditor from "../CardEditor";
 import CardSelector from "../CardSelector";
@@ -61,6 +62,20 @@ function CardPicker() {
 
   const [pickState, setPickState] = useState(PickState.PICKING);
   const [isEditing, setIsEditing] = useState(false);
+  const showFab =
+    Boolean(selectedCard) && pickState === PickState.PICKING && !isEditing;
+
+  useEffect(() => {
+    if (showFab) {
+      dispatch(slice.actions.updateHasFab(true));
+    } else {
+      dispatch(slice.actions.updateHasFab(false));
+    }
+
+    return () => {
+      dispatch(slice.actions.updateHasFab(false));
+    };
+  }, [dispatch, showFab]);
 
   function handleCardHiderClick() {
     setPickState(PickState.REVEALED);
@@ -126,13 +141,7 @@ function CardPicker() {
             fontSize="22vh"
           />
         </DelayedFade>
-        <Zoom
-          in={
-            Boolean(selectedCard) &&
-            pickState === PickState.PICKING &&
-            !isEditing
-          }
-        >
+        <Zoom in={showFab}>
           <Fab
             color="primary"
             className={classes.fab}

@@ -11,6 +11,7 @@ import type { CounterState } from "../../features/counter/redux/slice";
 import type { UserSettings } from "../../features/profile";
 
 interface AppState {
+  hasFab: boolean;
   lastConnectedUId?: string;
 }
 

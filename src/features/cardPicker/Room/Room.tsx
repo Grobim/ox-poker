@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import { isEmpty, isLoaded, useFirestore } from "react-redux-firebase";
 import { Redirect, useParams } from "react-router-dom";
 import firebase from "firebase/app";
+import { useSnackbar } from "notistack";
 
 import Fab from "@material-ui/core/Fab";
 import Zoom from "@material-ui/core/Zoom";
@@ -13,6 +14,7 @@ import VisibilityIcon from "@material-ui/icons/Visibility";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 
 import DelayedFade from "../../../app/DelayedFade";
+import slice from "../../../app/redux/slice";
 import { useUserId } from "../../auth";
 
 import {
@@ -39,6 +41,8 @@ interface RoomRouteParams {
 function Room() {
   const dispatch = useDispatch();
   const firestore = useFirestore();
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const { roomId } = useParams<RoomRouteParams>();
   useRoomConnect(roomId);
@@ -91,7 +95,16 @@ function Room() {
     }
   }, [dispatch, roomCards]);
 
+  useEffect(() => {
+    dispatch(slice.actions.updateHasFab(true));
+
+    return () => {
+      dispatch(slice.actions.updateHasFab(false));
+    };
+  }, [dispatch]);
+
   if (isLoaded(room) && isEmpty(room)) {
+    enqueueSnackbar("Room not found", { variant: "error" });
     return <Redirect to="/online" />;
   }
 

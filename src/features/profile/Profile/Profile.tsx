@@ -22,6 +22,8 @@ import Zoom from "@material-ui/core/Zoom";
 
 import EditIcon from "@material-ui/icons/Edit";
 
+import slice from "../../../app/redux/slice";
+
 import { useAuth, useProfile } from "../../auth";
 
 import { triggerUserSettingsUpdate, useSyncedUserSettings } from "..";
@@ -42,6 +44,12 @@ function Profile() {
   const [showAvatar, setShowAvatar] = useState<boolean>(
     profile.showAvatar || false
   );
+  const showFab =
+    !auth.isAnonymous &&
+    ((displayName && displayName !== profile.displayName) ||
+      showAvatar !== Boolean(profile.showAvatar) ||
+      Boolean(avatarFile) ||
+      avatarUrl !== profile.avatarUrl);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -54,6 +62,18 @@ function Profile() {
       setShowAvatar(profile.showAvatar || false);
     }
   }, [profile]);
+
+  useEffect(() => {
+    if (showFab) {
+      dispatch(slice.actions.updateHasFab(true));
+    } else {
+      dispatch(slice.actions.updateHasFab(false));
+    }
+
+    return () => {
+      dispatch(slice.actions.updateHasFab(false));
+    };
+  }, [dispatch, showFab]);
 
   function handleAvatarChange(event: ChangeEvent<HTMLInputElement>) {
     const file = (event.target.files || [])[0];
@@ -229,15 +249,7 @@ function Profile() {
           />
         </Grid>
       </Grid>
-      <Zoom
-        in={
-          !auth.isAnonymous &&
-          ((displayName && displayName !== profile.displayName) ||
-            showAvatar !== Boolean(profile.showAvatar) ||
-            Boolean(avatarFile) ||
-            avatarUrl !== profile.avatarUrl)
-        }
-      >
+      <Zoom in={showFab}>
         <Fab onClick={updateProfile} className={classes.fab} color="primary">
           <EditIcon />
         </Fab>

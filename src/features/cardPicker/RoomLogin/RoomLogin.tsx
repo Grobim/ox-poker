@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { Redirect, useParams } from "react-router-dom";
 import firebase from "firebase/app";
+import { useSnackbar } from "notistack";
 
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
@@ -28,6 +29,8 @@ interface RoomLoginProps {
 
 function RoomLogin({ onSuccess }: RoomLoginProps) {
   const { roomId } = useParams<RoomRouteParams>();
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const [isRegistering, setIsRegistering] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -52,8 +55,7 @@ function RoomLogin({ onSuccess }: RoomLoginProps) {
           passwordHash: password && sha256.sdigest(password),
         });
       } catch (error) {
-        const { code, message } = error;
-        setError({ code, message });
+        setError(error);
 
         throw error;
       }
@@ -62,16 +64,18 @@ function RoomLogin({ onSuccess }: RoomLoginProps) {
   );
 
   useEffect(() => {
-    setIsRegistering(true);
-    submitPassword()
-      .then(() => {
-        setIsRegistering(false);
-        onSuccess();
-      })
-      .catch(() => {
-        setIsRegistering(false);
-      });
-  }, [submitPassword, onSuccess]);
+    if (!requestError) {
+      setIsRegistering(true);
+      submitPassword()
+        .then(() => {
+          setIsRegistering(false);
+          onSuccess();
+        })
+        .catch(() => {
+          setIsRegistering(false);
+        });
+    }
+  }, [submitPassword, onSuccess, requestError]);
 
   function handlePasswordChange(event: ChangeEvent<HTMLInputElement>) {
     setPassword(event.target.value);
@@ -81,6 +85,7 @@ function RoomLogin({ onSuccess }: RoomLoginProps) {
     event.preventDefault();
 
     if (password && !isSubmitting) {
+      setError();
       setIsSubmitting(true);
       return submitPassword()
         .then(() => {
@@ -93,7 +98,8 @@ function RoomLogin({ onSuccess }: RoomLoginProps) {
     }
   }
 
-  if (!roomId) {
+  if (!roomId || (requestError && requestError.code === "not-found")) {
+    enqueueSnackbar("Room not found", { variant: "error" });
     return <Redirect to="/online" />;
   }
 
@@ -118,6 +124,7 @@ function RoomLogin({ onSuccess }: RoomLoginProps) {
                 type="password"
                 label="Password"
                 fullWidth
+                autoFocus
               />
             </form>
           </Grid>
