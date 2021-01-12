@@ -1,4 +1,3 @@
-import React from "react";
 import { isEmpty, isLoaded } from "react-redux-firebase";
 import { Redirect, Route, RouteProps } from "react-router-dom";
 

@@ -1,8 +1,8 @@
-import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
-import React from "react";
 import { isEmpty, isLoaded, useFirebase } from "react-redux-firebase";
 import firebaseLib from "firebase/app";
+
+import Button from "@material-ui/core/Button";
+import Typography from "@material-ui/core/Typography";
 
 import { useAuth } from "../hooks";
 

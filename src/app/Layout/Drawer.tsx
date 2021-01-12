@@ -11,7 +11,7 @@ import PeopleIcon from "@material-ui/icons/People";
 import PersonIcon from "@material-ui/icons/Person";
 import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 import clsx from "clsx";
-import React, { forwardRef, MouseEventHandler, ReactChild, Ref } from "react";
+import { forwardRef, MouseEventHandler, ReactChild, Ref } from "react";
 import { NavLink } from "react-router-dom";
 
 import { useIsRole, Role } from "../../features/auth";

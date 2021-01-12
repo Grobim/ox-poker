@@ -107,7 +107,7 @@ const defaultStoreManager = new StoreManager({
     serializableCheck: false,
   }),
   devTools: process.env.NODE_ENV !== "production",
-  enhancers: [persistState(storage, "FFX-HELPER/settings") as any],
+  enhancers: [persistState(storage, "OX-POKER/settings") as any],
 });
 
 export { withRefreshedStore, StoreManager };

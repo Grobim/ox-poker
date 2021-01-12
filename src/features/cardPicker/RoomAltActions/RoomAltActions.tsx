@@ -1,4 +1,3 @@
-import React from "react";
 import { isEmpty, isLoaded, useFirestore } from "react-redux-firebase";
 import { useParams } from "react-router-dom";
 import firebaseApp from "firebase/app";

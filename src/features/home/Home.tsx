@@ -1,5 +1,3 @@
-import React from "react";
-
 import Counter from "../counter/Counter";
 
 import styles from "./Home.module.css";

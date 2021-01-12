@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { isEmpty, isLoaded, useFirestore } from "react-redux-firebase";
 import { Redirect, useParams } from "react-router-dom";

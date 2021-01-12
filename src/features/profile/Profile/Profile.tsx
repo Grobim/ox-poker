@@ -1,10 +1,4 @@
-import React, {
-  ChangeEvent,
-  FormEvent,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { isEmpty, isLoaded, useFirebase } from "react-redux-firebase";
 import firebaseApp from "firebase/app";
