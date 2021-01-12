@@ -2,7 +2,7 @@ import { useCallback, Dispatch } from "react";
 import { ActionCreatorWithPayload, Selector } from "@reduxjs/toolkit";
 import { useDispatch, useSelector } from "react-redux";
 
-import { selectLastConnectedUserId } from "./selectors";
+import { selectHasFab, selectLastConnectedUserId } from "./selectors";
 import { RootState } from "./types";
 
 const useSelectorAndActionCreator = <Returned = unknown, Arg = Returned>(
@@ -23,6 +23,8 @@ const useSelectorAndActionCreator = <Returned = unknown, Arg = Returned>(
   return [value, setValue];
 };
 
+const useHasFab = () => useSelector(selectHasFab);
+
 const useLastConnectedUid = () => useSelector(selectLastConnectedUserId);
 
-export { useSelectorAndActionCreator, useLastConnectedUid };
+export { useSelectorAndActionCreator, useHasFab, useLastConnectedUid };

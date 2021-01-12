@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { Redirect, useParams } from "react-router-dom";
 import firebase from "firebase/app";
+import { useSnackbar } from "notistack";
 
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
@@ -28,6 +29,8 @@ interface RoomLoginProps {
 
 function RoomLogin({ onSuccess }: RoomLoginProps) {
   const { roomId } = useParams<RoomRouteParams>();
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const [isRegistering, setIsRegistering] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -96,6 +99,7 @@ function RoomLogin({ onSuccess }: RoomLoginProps) {
   }
 
   if (!roomId || (requestError && requestError.code === "not-found")) {
+    enqueueSnackbar("Room not found", { variant: "error" });
     return <Redirect to="/online" />;
   }
 

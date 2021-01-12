@@ -18,7 +18,13 @@ function getSelectFirestoreDataOrOrdered(
   };
 }
 
+const selectHasFab = (state: RootState) => state.app.hasFab;
+
 const selectLastConnectedUserId = (state: RootState) =>
   state.app.lastConnectedUId;
 
-export { getSelectFirestoreDataOrOrdered, selectLastConnectedUserId };
+export {
+  getSelectFirestoreDataOrOrdered,
+  selectHasFab,
+  selectLastConnectedUserId,
+};
