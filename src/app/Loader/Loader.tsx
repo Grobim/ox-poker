@@ -1,11 +1,10 @@
-import React from "react";
+import clsx from "clsx";
 
 import CircularProgress, {
   CircularProgressProps,
 } from "@material-ui/core/CircularProgress";
 
 import useStyles from "./Loader.styles";
-import clsx from "clsx";
 
 interface LoaderProps {
   className?: string;
